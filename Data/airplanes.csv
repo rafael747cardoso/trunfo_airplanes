@@ -1,0 +1,104 @@
+name;thrust_kN;max_takeoff_mass_kg;speed_kmh;range_km;max_altitude_m;length_m;height_m;wing_span_m;country;engine_mount;engine_type;wing_config;main_operator
+AI(R) ATR-42-500;26;18600;500;1326;7500;22.67;7.59;24.57;ITA-FRA;Wings;Turboprop;High;Civil
+AI(R) ATR-72-200;24;21530;530;1528;7600;27.16;7.65;27.05;ITA-FRA;Wings;Turboprop;High;Civil
+Antonov An-32;49;27000;510;2500;8000;23.78;8.75;29.20;UKR;Wings;Turboprop;High;Military
+Antonov An-70T;204;170000;730;5000;10900;40.25;16.1;44.06;UKR;Wings;Turboprop;High;Civil
+Beech 18 Lodestar;7;4490;360;4000;5000;10.7;2.84;19.96;USA;Wings;Piston;Low;Civil
+Beech C-90B King Air;6;4585;460;2455;10100;16.8;4.33;14.00;USA;Wings;Turboprop;Low;Civil
+Boeing Stearman;3;1275;203;813;3400;7.63;2.79;9.80;USA;Nose;Piston;Biplane;Civil
+Canadair CL-215T;34;21000;375;1587;7500;19.82;8.98;28.60;CAN;Wings;Piston;High;Civil
+Cessna 208 Caravan;6;3645;284;1982;9000;11.46;4.5;15.87;USA;Nose;Turboprop;High;Civil
+DHC-8-100 Dash 8;22;15740;480;2084;7600;22.25;7.49;25.89;CAN;Wings;Turboprop;High;Civil
+DHC-CS2F Turbo Firecat;19;11793;408;2172;6800;13.26;5.06;22.12;CAN;Wings;Turboprop;High;Military
+Dornier 328;23;13640;620;1852;7600;21.28;7.23;20.98;DEU;Wings;Turboprop;High;Civil
+Douglas DC-3;19;12200;346;2540;6500;19.66;5.16;29.00;USA;Wings;Piston;Low;Civil
+Dragon Rapide;5;2495;212;895;5900;10.52;3.12;14.63;GBR;Wings;Piston;Biplane;Civil
+Embraer EMB-120 Brasília;18;11580;540;1750;7570;20.0;6.35;19.78;BRA;Wings;Turboprop;Low;Civil
+Fokker 50;25;21590;530;1700;8900;25.25;8.32;29.00;NDL;Wings;Turboprop;High;Civil
+Grob GF-200;2;1470;425;2650;5000;8.5;3.2;11.00;DEU;Tail;Piston;Low;Civil
+Junkers JU-52;18;11000;270;998;6500;18.9;5.55;29.25;DEU;Wings;Piston;Low;Civil
+Let 410 UVP E;12;6420;330;510;7770;14.42;5.83;19.98;CZE;Wings;Turboprop;High;Civil
+Lockheed C-130 Hercules;96;70308;510;3800;6060;32.33;11.75;40.41;USA;Wings;Turboprop;High;Military
+Lockheed L-749A Constellation;51;48580;525;8039;9000;29.03;7.02;37.00;USA;Wings;Piston;Low;Civil
+Lockhhed P-3 Orion;67;64410;652;2491;8600;35.61;10.29;30.38;USA;Wings;Turboprop;Low;Military
+Noratlas;25;22000;440;2500;7500;21.96;6.0;32.50;FRA;Wings;Piston;High;Military
+Piaggio P180 Avanti;7;5239;690;2800;12400;14.41;3.99;14.00;ITA;Wings;Turboprop;Middle;Civil
+Piper PA-42-720 Cheyenne;14;5080;480;4204;9000;8.8;3.97;14.50;USA;Wings;Turboprop;Low;Civil
+Pitts Special;2;521;227;513;6800;4.71;1.92;6.10;USA;Nose;Piston;Biplane;Civil
+Saab 2000;44;23000;510;2869;9400;24.28;7.73;24.76;SWE;Wings;Turboprop;Low;Civil
+Saab 340A;19;13155;490;1732;7600;19.73;6.97;21.44;SWE;Wings;Turboprop;Low;Civil
+Short SC.7 Skyvan;12;6213;320;1115;3050;12.6;4.58;19.79;GBR;Wings;Turboprop;High;Civil
+Socata TBM 700;3;2984;555;3304;7800;10.43;3.99;12.83;FRA;Nose;Turboprop;Low;Civil
+Super Guppy 377SGT-201;132;77000;400;3211;4575;43.84;14.78;47.63;USA-FRA;Wings;Turboprop;Low;Civil
+Airbus A300-600 ST Beluga;525;150000;780;2779;10000;56.16;17.25;44.84;EU;Wings;Jet;Low;Civil
+Airbus A310-300 MRTT;476;157000;860;8889;12000;46.66;15.81;43.90;EU;Wings;Jet;Low;Military
+Airbus A318-100;212;68000;860;5740;11250;31.44;6.76;34.10;EU;Wings;Jet;Low;Civil
+Antonov An-225;1374;600000;820;15400;10000;84.0;18.1;88.40;UKR;Wings;Jet;High;Civil
+Beriev Be-200;148;43000;710;2100;8000;32.05;8.9;32.80;FRA;Wings;Jet;High;Civil
+Boeing 747SP;888;317500;880;12320;10600;56.31;19.94;59.64;USA;Wings;Jet;Low;Civil
+Boeing C-17 Globemaster;724;265352;740;4480;13640;53.04;16.79;51.75;USA;Wings;Jet;High;Military
+Boeing E-3A Sentry Awacs;372;147400;855;7400;11000;44.61;12.73;44.42;USA;Wings;Jet;Low;Military
+Boeing F/A 18 Hornet;196;29932;1800;2017;15500;18.5;4.87;12.30;USA;Fuselage;Jet;Middle;Military
+Boeing F/A 22 Raptor;512;27200;2335;3000;19812;19.55;5.1;13.56;USA;Fuselage;Jet;Middle;Military
+Bombardier CRJ 700;123;32885;785;2553;10600;32.41;7.32;23.20;CAN;Tail;Jet;Low;Civil
+Canadair Global Express;130;42356;880;9630;15500;29.45;7.62;28.70;CAN;Tail;Jet;Low;Civil
+Dassault Rafale;150;22500;2350;1850;16775;15.27;5.34;10.90;FRA;Fuselage;Jet;Middle;Military
+Embraer ERL-135;66;20000;833;3240;11300;26.33;6.76;20.04;BRA;Tail;Jet;Low;Civil
+Geophysica M-55;98;24500;760;4965;21360;22.87;4.83;37.46;FRA;Fuselage;Jet;High;Civil
+Grob SPn G180;25;6300;754;3425;12497;14.81;5.12;14.86;DEU;Tail;Jet;Low;Civil
+Gulfstream G 1159-V Gulf V;132;41277;852;12000;15500;29.4;7.7;28.48;USA;Tail;Jet;Low;Civil
+Ilyushin IL-76MF;628;210000;780;4200;13100;53.19;14.45;50.50;RUS;Wings;Jet;High;Civil
+Mig 39UB;173;18000;2440;1430;17000;17.05;7.7;11.36;RUS;Fuselage;Jet;Middle;Military
+Raytheon Premier I;20;5860;835;1530;12500;14.03;4.67;13.56;USA;Tail;Jet;Low;Civil
+Airbus A319;213;70000;880;6940;12500;33.74;11.76;35.80;EU;Wings;Jet;Low;Civil
+Airbus A320;244;73500;820;6112;11200;37.57;11.76;35.80;EU;Wings;Jet;Low;Civil
+Airbus A330-300;664;217000;860;11760;11800;63.7;16.9;60.30;EU;Wings;Jet;Low;Civil
+Airbus A380;1424;575000;903;14800;13000;72.72;24.09;79.75;EU;Wings;Jet;Low;Civil
+Antonov An-124;918;392000;820;8400;10000;69.2;20.78;73.30;UKR;Wings;Jet;High;Civil
+BAe/Aerospatiale Concorde;676;185065;2170;7223;15550;62.17;12.19;25.60;GBR-FRA;Wings;Jet;Low;Civil
+Boeing 727-200;216;95028;880;3500;10000;46.7;10.4;32.92;USA;Tail;Jet;Low;Civil
+Boeing 737-200;142;58100;927;4800;11500;30.48;11.28;28.00;USA;Wings;Jet;Low;Civil
+Boeing 737-700;214;60320;785;5575;12400;33.6;12.5;34.32;USA;Wings;Jet;Low;Civil
+Boeing 737-800;233;70530;785;5575;12400;39.5;12.5;34.32;USA;Wings;Jet;Low;Civil
+Boeing 757-200 PF;356;115650;860;5435;11600;47.3;13.6;38.00;USA;Wings;Jet;Low;Civil
+Boeing 767-200ER;508;179140;920;12200;13000;48.5;15.9;47.57;USA;Wings;Jet;Low;Civil
+Boeing 767-300F ER;536;186850;860;11070;10600;55.0;15.9;47.57;USA;Wings;Jet;Low;Civil
+British Aerospace 146-200;125;42185;730;3650;9600;28.55;8.61;26.34;GBR;Wings;Jet;High;Civil
+British Aerospace BAC 1-11;124;45201;780;1340;10300;32.61;7.74;26.97;GBR;Tail;Jet;Low;Civil
+Fokker 100;124;43320;770;2450;10600;35.53;8.5;28.08;NLD;Tail;Jet;Low;Civil
+Ilyushin IL-86;508;208000;840;5000;11800;59.54;15.81;48.06;RUS;Wings;Jet;Low;Civil
+Ilyushin IL-96;628;216000;860;11500;10000;55.35;17.6;60.11;RUS;Wings;Jet;Low;Civil
+Lockheed L1011-500;666;234620;900;9899;10000;50.04;18.86;50.09;USA;Wings and Tail;Jet;Low;Civil
+McDonnell Douglas DC-9-15;109;35245;900;2400;10300;31.85;8.39;27.25;USA;Tail;Jet;Low;Civil
+McDonnell Douglas MD-83;193;72580;820;3300;10600;45.0;9.0;32.82;USA;Tail;Jet;Low;Civil
+McDonnell Douglas MD-90-30;222;70760;860;3787;11300;46.5;9.4;32.86;USA;Tail;Jet;Low;Civil
+Tupolev Tu-134B;133;49000;885;3000;10900;34.9;9.02;29.01;RUS;Tail;Jet;Low;Civil
+Tupolev Tu-154M;309;100000;900;5280;10900;48.0;11.4;37.55;RUS;Tail;Jet;Low;Civil
+Tupolev Tu-204;314;103000;880;4300;12100;48.0;13.88;41.80;RUS;Wings;Jet;Low;Civil
+Yakoklev Yak-40;44;16000;550;1800;10000;20.36;6.5;25.00;RUS;Tail;Jet;Low;Civil
+Yakoklev Yak-42;191;56500;750;4000;9050;36.38;9.83;34.88;RUS;Tail;Jet;Low;Civil
+British Aerospace Lightning;120;19000;2500;2500;18000;16.8;5.97;10.6;GBR;Fuselage;Jet;Middle;Military
+Dassault Mirage 2000 B;88;9000;2300;1400;17060;15.33;5.2;9.0;FRA;Fuselage;Jet;Low;Military
+Dassault Mirage 4000;200;20000;2300;3600;20000;18.7;5.8;12.0;FRA;Fuselage;Jet;Low;Military
+Dassault Mirage 5;61;13700;2300;2600;18000;15.55;4.5;8.22;FRA;Fuselage;Jet;Low;Military
+Dassault Mirage 50;70;13700;2200;1300;18000;15.56;4.5;8.22;FRA;Fuselage;Jet;Low;Military
+Dassault Mirage F-1;71;15200;2300;3000;20000;15.0;4.5;8.4;FRA;Fuselage;Jet;High;Military
+Dassault Mirage III-R;61;13700;2300;2400;17000;15.5;4.5;8.22;FRA;Fuselage;Jet;Low;Military
+Dassault Mirage IV;140;31600;2300;3500;20000;23.5;5.4;11.85;FRA;Fuselage;Jet;Low;Military
+Dassault Super Etendard;50;12000;1250;1500;13700;14.31;3.86;9.6;FRA;Fuselage;Jet;Low;Military
+General Dynamics F-16;112;16057;2100;2000;15000;14.52;4.9;9.45;USA;Fuselage;Jet;Middle;Military
+Grumman F-14 Tomcat;186;33724;2600;3500;16000;18.89;4.9;19.45;USA;Fuselage;Jet;High;Military
+IAI Kfir C2;80;14700;2400;1550;17680;15.65;4.55;8.22;ISR;Fuselage;Jet;Low;Military
+McDonnell Douglas AV-8 B;96;13494;1200;4800;11582;14.12;3.55;9.25;USA;Fuselage;Jet;High;Military
+McDonnell Douglas F-15 Eagle;230;30000;2600;4000;20000;19.43;5.64;13.05;USA;Fuselage;Jet;High;Military
+McDonnell Douglas F-18 Hornet;142;21319;1900;2500;15000;17.07;4.7;11.43;USA;Fuselage;Jet;High;Military
+McDonnell Douglas F-4F Phantom;160;28030;2300;2600;18000;19.2;5;11.77;USA;Fuselage;Jet;Low;Military
+Mitsubishi T-2;67;12800;1800;2200;15240;17.86;4.39;7.87;JPN;Fuselage;Jet;High;Military
+Northrop F-5E Tiger;46;11193;1700;2863;15800;14.86;4.08;8.13;USA;Fuselage;Jet;Low;Military
+Northrop T-38 Talon;35;5362;1300;1835;15000;14.13;3.92;7.7;USA;Fuselage;Jet;Low;Military
+Northrop YF-17;136;17237;2300;1900;18000;17.07;4.42;10.67;USA;Fuselage;Jet;Middle;Military
+Panavia Tornado;142;26490;2400;2700;15240;18.06;5.95;13.9;GBR-ITA-DEU;Fuselage;Jet;High;Military
+Rockwell B-1;540;176820;2400;11600;18000;45.78;10;41.67;USA;Wings;Jet;Low;Military
+Saab JA37 Viggen;115;17000;2300;2000;18000;16.4;5.9;10.6;SWE;Fuselage;Jet;Low;Military
+Saab S-35E Draken;80;12270;2300;1500;20000;15.35;3.89;9.4;SWE;Fuselage;Jet;Middle;Military
+Sepecat Jaguar;65;14700;1700;2800;14000;16.83;4.89;8.69;GBR-FRA;Fuselage;Jet;High;Military

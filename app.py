@@ -8,28 +8,30 @@ import dash_core_components as dcc
 import dash_html_components as html
 import dash_bootstrap_components as dbc
 from dash.dependencies import Input, Output
-import pymysql
-
 
 
 #-----------------------------------------------------------------------------------------------------------------------
 #################################################### Data ##############################################################
 
-# Pull the tablea from the database in MySQL:
-db_conn = pymysql.connect(
-    host = "localhost",
-    user = "root", 
-    password = "",
-    database = "super_trunfo"
-)
-cursor = db_conn.cursor()
-cursor.execute("SELECT * FROM airplanes;")
-airplanes_rows = cursor.fetchall()
-num_fields = len(cursor.description)
-airplanes_header = [i[0] for i in cursor.description]
-db_conn.close()
-df_airplanes = pd.DataFrame(list(airplanes_rows))
-df_airplanes = df_airplanes.rename(columns = dict([(i, airplanes_header[i]) for i in range(num_fields)]))
+# Read the data from the csv:
+df_airplanes = pd.read_csv("Data/airplanes.csv",
+                           sep = ";")
+
+# Data to show on hovers:
+custom_hovertemplate = ("<b>%{customdata[0]}</b><br><br>" +
+                        "<b>Thrust (kN) = </b>%{customdata[1]}<br>" +
+                        "<b>Max Takeoff Mass (kg) = </b>%{customdata[2]}<br>" +
+                        "<b>Speed (km/h) = </b>%{customdata[3]}<br>" +
+                        "<b>Range (km) = </b>%{customdata[4]}<br>" +
+                        "<b>Max Altitude (m) = </b>%{customdata[5]}<br>" +
+                        "<b>Length (m) = </b>%{customdata[6]:.2f}<br>" +
+                        "<b>Height (m) = </b>%{customdata[7]:.2f}<br>" +
+                        "<b>Wing Span (m) = </b>%{customdata[8]:.2f}<br>" +
+                        "<b>Country = </b>%{customdata[9]}<br>" +
+                        "<b>Engine Mount = </b>%{customdata[10]}<br>" +
+                        "<b>Engine Type = </b>%{customdata[11]}<br>" +
+                        "<b>Wing configuration = </b>%{customdata[12]}<br>" +
+                        "<b>Main Operator = </b>%{customdata[13]}")
 
 
 #-----------------------------------------------------------------------------------------------------------------------
@@ -42,40 +44,36 @@ server = app.server
 #-----------------------------------------------------------------------------------------------------------------------
 #################################################### Backend ###########################################################
 
-### Elements that wont need user inputs
+### Without inputs
+
+### With inputs
 
 # Plot 1:
+@app.callback(
+    Output(component_id = "plot_1", component_property = "figure"),
+    [Input(component_id = "plot_1_scale", component_property = "value")]
+)
 def update_plot_1():
     plot_1 = px.scatter(
         data_frame = df_airplanes,
         x = "thrust_kN",
         y = "speed_kmh",
-        color = "engine_mount",
+        color = "engine_type",
+        size = "max_takeoff_mass_kg",
+        custom_data = list(df_airplanes.columns),
         template = "plotly_dark",
-        labels = {"thrust_kN": "Thrust (kN)",
-                  "speed_kmh": "Speed (km/h)"}
+        labels = {"thrust_kN": "<b style = 'font-size: 14px;'>Thrust (kN)</b>",
+                  "speed_kmh": "<b style = 'font-size: 14px;'>Speed (km/h)</b>",
+                  "engine_type": "<b style = 'font-size: 14px;'>Engine Type:</b> <br>"}
     )
-    return(plot_1)
-
-### Callbacks
-
-# Plot 2:
-@app.callback(
-    Output(component_id = "plot_2", component_property = "figure"),
-    [Input(component_id = "plot_2_scale", component_property = "value")]
-)
-def update_plot_2(plot_2_scale):
-    plot_2 = px.scatter(
-        data_frame = df_airplanes,
-        x = "max_takeoff_mass_kg",
-        y = "length_m",
-        color = "wing_config",
-        template = "plotly_dark",
-        log_y = plot_2_scale,
-        labels = {"max_takeoff_mass_kg": "Maximum Takeoff Mass (kg)",
-                  "length_m": "Length (m)"}
+    plot_1.update_traces(
+        hovertemplate = custom_hovertemplate
     )
-    return(plot_2)
+    plot_1.show()
+    
+    return (plot_1)
+
+
 
 #-----------------------------------------------------------------------------------------------------------------------
 ################################################## Frontend ############################################################
@@ -108,14 +106,12 @@ tab_2 = html.Div([
         inline = True,
         style = {"text-align": "center"}
     ),
-    dcc.Graph(id = "plot_2",
-              figure = {}),
     html.Br()
 ])
 
 
 # Layout:
-app.layout = html.Div(
+app.layout = dbc.Container(
     [
         html.Div(
             [
