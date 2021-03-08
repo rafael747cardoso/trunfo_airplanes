@@ -48,89 +48,200 @@ server = app.server
 
 ### With inputs
 
-# Plot 1:
-@app.callback(
-    Output(component_id = "plot_1", component_property = "figure"),
-    [Input(component_id = "plot_1_scale", component_property = "value")]
-)
-def update_plot_1():
-    plot_1 = px.scatter(
-        data_frame = df_airplanes,
-        x = "thrust_kN",
-        y = "speed_kmh",
-        color = "engine_type",
-        size = "max_takeoff_mass_kg",
-        custom_data = list(df_airplanes.columns),
-        template = "plotly_dark",
-        labels = {"thrust_kN": "<b style = 'font-size: 14px;'>Thrust (kN)</b>",
-                  "speed_kmh": "<b style = 'font-size: 14px;'>Speed (km/h)</b>",
-                  "engine_type": "<b style = 'font-size: 14px;'>Engine Type:</b> <br>"}
-    )
-    plot_1.update_traces(
-        hovertemplate = custom_hovertemplate
-    )
-    plot_1.show()
-    
-    return (plot_1)
+# # Plot 1:
+# @app.callback(
+#     Output(component_id = "plot_1", component_property = "figure"),
+#     [Input(component_id = "plot_1_scale", component_property = "value")]
+# )
+# def update_plot_1():
+#     plot_1 = px.scatter(
+#         data_frame = df_airplanes,
+#         x = "thrust_kN",
+#         y = "speed_kmh",
+#         color = "engine_type",
+#         size = "max_takeoff_mass_kg",
+#         custom_data = list(df_airplanes.columns),
+#         template = "plotly_dark",
+#         labels = {"thrust_kN": "<b style = 'font-size: 14px;'>Thrust (kN)</b>",
+#                   "speed_kmh": "<b style = 'font-size: 14px;'>Speed (km/h)</b>",
+#                   "engine_type": "<b style = 'font-size: 14px;'>Engine Type:</b> <br>"}
+#     )
+#     plot_1.update_traces(
+#         hovertemplate = custom_hovertemplate
+#     )
+#     plot_1.show()
+#     
+#     return (plot_1)
 
 
 
 #-----------------------------------------------------------------------------------------------------------------------
 ################################################## Frontend ############################################################
 
-tab_1 = html.Div([
-    html.Br(),
-    html.H3("Airplanes here",
-            style = {"text-align": "center"}),
-    html.Br(),
-    dcc.Graph(id = "plot_1",
-              figure = update_plot_1()),
-    html.Br()
-])
-
-tab_2 = html.Div([
-    html.Br(),
-    html.H3("Airplanes here too",
-            style = {"text-align": "center"}),
-    html.Br(),
-    dbc.RadioItems(
-        id = "plot_2_scale",
-        options =
-        [
-            {"label": "Linear", 
-             "value": False},
-            {"label": "Log", 
-             "value": True}
-        ],
-        value = False,
-        inline = True,
-        style = {"text-align": "center"}
-    ),
-    html.Br()
-])
-
-
-# Layout:
-app.layout = dbc.Container(
+# Exploratory Analysis:
+tab_explodata = html.Div(
     [
-        html.Div(
+        # Cards:
+        html.Br(),
+        dbc.Row(
             [
-                html.Br(),
-                html.H2("Dashboard Airplanes"),
-                html.Br(),
-                
-                dbc.Tabs(
-                    [
-                        dbc.Tab(children = tab_1,
-                                label = "Tab 1"),
-                        dbc.Tab(children = tab_2,
-                                label = "Tab 2")
-                    ]
+                dbc.Col(
+                    dbc.Card(
+                        dbc.CardBody(
+                            [
+                                html.H3(className = "card-title",
+                                        children = "Fastest"),
+                                html.Br(),
+                                html.H3(className = "card-subtitle",
+                                        children = "F-15")
+                            ]
+                        ),
+                        className = "card_top_airplane",
+                        color = "primary",
+                        inverse = False
+                    ),
+                    width = 3,
+                    className = "col-card"
+                ),
+                dbc.Col(
+                    dbc.Card(
+                        dbc.CardBody(
+                            [
+                                html.H3(className = "card-title",
+                                        children = "Heaviest"),
+                                html.Br(),
+                                html.H3(className = "card-subtitle",
+                                        children = "An-225")
+                            ]
+                        ),
+                        className = "card_top_airplane",
+                        color = "primary",
+                        inverse = False
+                    ),
+                    width = 3,
+                    className = "col-card"
+                ),
+                dbc.Col(
+                    dbc.Card(
+                        dbc.CardBody(
+                            [
+                                html.H3(className = "card-title",
+                                        children = "Longest"),
+                                html.Br(),
+                                html.H3(className = "card-subtitle",
+                                        children = "An-225")
+                            ]
+                        ),
+                        className = "card_top_airplane",
+                        color = "primary",
+                        inverse = False
+                    ),
+                    width = 3,
+                    className = "col-card"
+                ),
+                dbc.Col(
+                    dbc.Card(
+                        dbc.CardBody(
+                            [
+                                html.H3(className = "card-title",
+                                        children = "Farthest"),
+                                html.Br(),
+                                html.H3(className = "card-subtitle",
+                                        children = "Global Express")
+                            ]
+                        ),
+                        className = "card_top_airplane",
+                        color = "primary",
+                        inverse = False
+                    ),
+                    width = 3,
+                    className = "col-card"
                 )
-                
+            ]
+        ),
+        html.Br(),
+
+        # Scatter plot:
+        dbc.Row(
+            [
+                "scatter plot"
+            ]
+        ),
+        
+        # Density and Pie plots:
+        dbc.Row(
+            [
+                "dens and pie"
+            ]
+        ),
+        
+        # Parallel sets:
+        dbc.Row(
+            [
+                "parallel"
+            ]
+        )
+
+    ]
+)
+
+# Table:
+tab_table = html.Div(
+    [
+        dbc.Row(
+            [
+                "table"
             ]
         )
     ]
+)
+
+# ML Models:
+tab_mlmodels = html.Div(
+    [
+        # Civil/Military Classification with Logit Reg:
+        dbc.Row(
+            [
+                "logit reg"
+            ]
+        ),
+        
+        # k-Means Clustering:
+        dbc.Row(
+            [
+                "k-means"
+            ]
+        )
+    ]
+)
+
+# Layout:
+app.layout = html.Div(
+    [
+        html.Br(),
+        html.Br(),
+        html.H2("Trunfo Airplanes Dashboard",
+                style = {"text-align": "center"}),
+        html.Br(),
+        html.Br(),
+        dbc.Tabs(
+            [
+                dbc.Tab(
+                    label = "Eploratory Analysis",
+                    children = tab_explodata
+                ),
+                dbc.Tab(
+                    label = "Data",
+                    children = tab_table
+                ),
+                dbc.Tab(
+                    label = "Machine Learning Models",
+                    children = tab_mlmodels
+                )
+            ]
+        )
+    ],
+    className = "main-div"
 )
 
 
