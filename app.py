@@ -43,6 +43,29 @@ heaviest = np.array(df_airplanes.loc[np.where(df_airplanes["max_takeoff_mass_kg"
 longest = np.array(df_airplanes.loc[np.where(df_airplanes["length_m"] == max(df_airplanes["length_m"]))].iloc[0])[[0, 1]]
 most_potent = np.array(df_airplanes.loc[np.where(df_airplanes["thrust_kN"] == max(df_airplanes["thrust_kN"]))].iloc[0])[[0, 1]]
 
+# Possible variables for the selects:
+vars_poss_num = [
+    {"label": "Thrust", "value": "thrust_kN"},
+    {"label": "Max Takeoff Mass", "value": "max_takeoff_mass_kg"},
+    {"label": "Speed", "value": "speed_kmh"},
+    {"label": "Range", "value": "range_km"},
+    {"label": "Max Altitude", "value": "max_altitude_m"},
+    {"label": "Length", "value": "length_m"},
+    {"label": "Height", "value": "height_m"},
+    {"label": "Wingspan", "value": "wing_span_m"}
+]
+vars_poss_cat = [
+    {"label": "Manufacturer Name", "value": "manufacturer_name"},
+    {"label": "Country", "value": "country"},
+    {"label": "Engine Mount", "value": "engine_mount"},
+    {"label": "Engine Type", "value": "engine_type"},
+    {"label": "Wing Config", "value": "wing_config"},
+    {"label": "Main Operator", "value": "main_operator"}
+]
+
+
+
+
 
 #-----------------------------------------------------------------------------------------------------------------------
 ################################################# Initialize ###########################################################
@@ -54,33 +77,45 @@ server = app.server
 #-----------------------------------------------------------------------------------------------------------------------
 #################################################### Backend ###########################################################
 
-### Callbacks
+#################### Exploratory Data Analysis
 
-# # Plot 1:
-# @app.callback(
-#     Output(component_id = "plot_1", component_property = "figure"),
-#     [Input(component_id = "plot_1_scale", component_property = "value")]
-# )
-# def update_plot_1():
-#     plot_1 = px.scatter(
-#         data_frame = df_airplanes,
-#         x = "thrust_kN",
-#         y = "speed_kmh",
-#         color = "engine_type",
-#         size = "max_takeoff_mass_kg",
-#         custom_data = list(df_airplanes.columns),
-#         template = "plotly_dark",
-#         labels = {"thrust_kN": "<b style = 'font-size: 14px;'>Thrust (kN)</b>",
-#                   "speed_kmh": "<b style = 'font-size: 14px;'>Speed (km/h)</b>",
-#                   "engine_type": "<b style = 'font-size: 14px;'>Engine Type:</b> <br>"}
-#     )
-#     plot_1.update_traces(
-#         hovertemplate = custom_hovertemplate
-#     )
-#     plot_1.show()
-#     
-#     return (plot_1)
+# Scatter plot:
+@app.callback(
+    Output(component_id = "plot_scatter_eda", component_property = "figure"),
+    [Input(component_id = "x_scatter_eda", component_property = "value"),
+     Input(component_id = "y_scatter_eda", component_property = "value"),
+     Input(component_id = "size_scatter_eda", component_property = "value"),
+     Input(component_id = "color_scatter_eda", component_property = "value")]
+)
+def update_plot_scatter_eda(x_scatter_eda,
+                            y_scatter_eda,
+                            size_scatter_eda,
+                            color_scatter_eda):
+    plot_scatter_eda = px.scatter(
+        data_frame = df_airplanes,
+        x = x_scatter_eda,
+        y = y_scatter_eda,
+        size = size_scatter_eda,
+        color = color_scatter_eda,
+        custom_data = list(df_airplanes.columns),
+        template = "plotly_dark"#,
+        # labels = {"thrust_kN": "<b style = 'font-size: 14px;'>Thrust (kN)</b>",
+        #           "speed_kmh": "<b style = 'font-size: 14px;'>Speed (km/h)</b>",
+        #           "engine_type": "<b style = 'font-size: 14px;'>Engine Type:</b> <br>"}
+    )
+    plot_scatter_eda.update_traces(
+        hovertemplate = custom_hovertemplate
+    )
+    return (plot_scatter_eda)
 
+
+
+
+
+#################### Table
+
+
+#################### ML Models
 
 
 
@@ -105,7 +140,9 @@ app.layout = html.Div(
                     children = tab_explo_data_analysis(fastest = fastest,
                                                        heaviest = heaviest,
                                                        longest = longest,
-                                                       most_potent = most_potent)
+                                                       most_potent = most_potent,
+                                                       vars_poss_num = vars_poss_num,
+                                                       vars_poss_cat = vars_poss_cat)
                 ),
                 dbc.Tab(
                     label = "Table",

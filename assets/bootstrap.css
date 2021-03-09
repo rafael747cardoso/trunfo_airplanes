@@ -11452,11 +11452,11 @@ a.text-dark:hover, a.text-dark:focus {
 }
 
 #fastest-card {
-    background-color: #244ec6;
+    background-color: #038ef8;
 }
 
 #heaviest-card {
-    background-color: #6e0af3;
+    background-color: #853dc1;
 }
 
 #longest-card {
@@ -11464,11 +11464,21 @@ a.text-dark:hover, a.text-dark:focus {
 }
 
 #most_potent-card {
-    background-color: #f3480a;
+    background-color: #e45e35;
 }
 
 /************************************************** Plots */
 
+.plot-card {
+    border-radius: 15px;
+    text-align: center;
+    border: 1px solid gray;
+    padding: 20px
+}
+
+.selectinput-label {
+    
+}
 
 
 

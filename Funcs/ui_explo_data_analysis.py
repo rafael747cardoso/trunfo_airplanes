@@ -7,7 +7,9 @@ from Funcs.ui_card import card
 def tab_explo_data_analysis(fastest,
                             heaviest,
                             longest,
-                            most_potent                            
+                            most_potent,
+                            vars_poss_num,
+                            vars_poss_cat
                             ):
     """
     Makes the UI of the Exploratory Data Analysis tab.
@@ -59,7 +61,82 @@ def tab_explo_data_analysis(fastest,
             # Scatter plot:
             dbc.Row(
                 [
-                    "scatter plot"
+                    dbc.Col(
+                        dbc.Card(
+                            [
+                                # Selects of the variables:
+                                dbc.Row(
+                                    [
+                                        dbc.Col(
+                                            [
+                                                html.H5("X axis",
+                                                        className = "selectinput-label"),
+                                                dbc.Select(
+                                                    id = "x_scatter_eda",
+                                                    options = vars_poss_num,
+                                                    value = vars_poss_num[0]["value"]
+                                                )
+                                            ],
+                                            width = 3
+                                        ),
+                                        dbc.Col(
+                                            [
+                                                html.H5("Y axis",
+                                                        className = "selectinput-label"),
+                                                dbc.Select(
+                                                    id = "y_scatter_eda",
+                                                    options = vars_poss_num,
+                                                    value = vars_poss_num[1]["value"]
+                                                )
+                                            ],
+                                            width = 3
+                                        ),
+                                        dbc.Col(
+                                            [
+                                                html.H5("Size",
+                                                        className = "selectinput-label"),
+                                                dbc.Select(
+                                                    id = "size_scatter_eda",
+                                                    options = vars_poss_num,
+                                                    value = vars_poss_num[2]["value"]
+                                                )
+                                            ],
+                                            width = 3
+                                        ),
+                                        dbc.Col(
+                                            [
+                                                html.H5("Color",
+                                                        className = "selectinput-label"),
+                                                dbc.Select(
+                                                    id = "color_scatter_eda",
+                                                    options = vars_poss_cat,
+                                                    value = vars_poss_cat[0]["value"]
+                                                )
+                                            ],
+                                            width = 3
+                                        )
+                                    ]
+                                ),
+
+                                # Plot:
+                                dbc.Row(
+                                    [
+                                        dbc.Col(
+                                            [
+                                                dcc.Graph(id = "plot_scatter_eda",
+                                                          figure = {})
+                                            ],
+                                            width = 12
+                                        )
+                                    ]
+                                )
+
+                            ],
+                            className = "plot-card",
+                            inverse = True
+                        ),
+                        width = 12
+                    )                    
                 ]
             ),
     
