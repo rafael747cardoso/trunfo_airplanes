@@ -44,9 +44,7 @@ server = app.server
 #-----------------------------------------------------------------------------------------------------------------------
 #################################################### Backend ###########################################################
 
-### Without inputs
-
-### With inputs
+### Callbacks
 
 # # Plot 1:
 # @app.callback(
@@ -78,8 +76,8 @@ server = app.server
 #-----------------------------------------------------------------------------------------------------------------------
 ################################################## Frontend ############################################################
 
-# Exploratory Analysis:
-tab_explodata = html.Div(
+# Exploratory Data Analysis:
+tab_explo_data_analysis = html.Div(
     [
         # Cards:
         html.Br(),
@@ -197,7 +195,7 @@ tab_table = html.Div(
 )
 
 # ML Models:
-tab_mlmodels = html.Div(
+tab_ml_models = html.Div(
     [
         # Civil/Military Classification with Logit Reg:
         dbc.Row(
@@ -228,7 +226,7 @@ app.layout = html.Div(
             [
                 dbc.Tab(
                     label = "Eploratory Analysis",
-                    children = tab_explodata
+                    children = tab_explo_data_analysis
                 ),
                 dbc.Tab(
                     label = "Data",
@@ -236,7 +234,7 @@ app.layout = html.Div(
                 ),
                 dbc.Tab(
                     label = "Machine Learning Models",
-                    children = tab_mlmodels
+                    children = tab_ml_models
                 )
             ]
         )
