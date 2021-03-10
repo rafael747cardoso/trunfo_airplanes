@@ -13,6 +13,7 @@ from Funcs.ui_table import tab_table
 from Funcs.ui_ml_models import tab_ml_models
 
 
+
 #-----------------------------------------------------------------------------------------------------------------------
 #################################################### Data ##############################################################
 
@@ -65,6 +66,13 @@ vars_poss_cat = [
     {"label": "Engine Type", "value": "engine_type"},
     {"label": "Wing Config", "value": "wing_config"},
     {"label": "Main Operator", "value": "main_operator"}
+]
+vars_poss_dens_cat = [
+    {"label": "All categories", "value": "all_categories"},
+    {"label": "Main Operator", "value": "main_operator"},
+    {"label": "Engine Mount", "value": "engine_mount"},
+    {"label": "Engine Type", "value": "engine_type"},
+    {"label": "Wing Config", "value": "wing_config"}
 ]
 
 # Labels for the plots axis:
@@ -125,9 +133,37 @@ def update_plot_scatter_eda(x_scatter_eda,
     plot_scatter_eda.update_traces(
         hovertemplate = custom_hovertemplate
     )
-    return (plot_scatter_eda)
+    return(plot_scatter_eda)
 
-# 
+# Density plot:
+@app.callback(
+    Output(component_id = "plot_density_eda", component_property = "figure"),
+    [Input(component_id = "x_density_eda", component_property = "value"),
+     Input(component_id = "color_density_eda", component_property = "value")]
+)
+def update_plot_density_eda(x_density_eda,
+                            color_density_eda):
+    if color_density_eda == "all_categories":
+        plot_density_eda = px.histogram(
+            data_frame = df_airplanes,
+            x = x_density_eda,
+            marginal = "violin",
+            nbins = 100,
+            template = "plotly_dark",
+            labels = axis_plots
+        )
+    else:        
+        plot_density_eda = px.histogram(
+            data_frame = df_airplanes,
+            x = x_density_eda,
+            color = color_density_eda,
+            marginal = "violin",
+            nbins = 100,
+            template = "plotly_dark",
+            labels = axis_plots
+        )
+    return(plot_density_eda)
+
 
 
 
@@ -155,13 +191,14 @@ app.layout = html.Div(
         dbc.Tabs(
             [
                 dbc.Tab(
-                    label = "Eploratory Analysis",
+                    label = "Eploratory Data Analysis",
                     children = tab_explo_data_analysis(fastest = fastest,
                                                        heaviest = heaviest,
                                                        longest = longest,
                                                        most_potent = most_potent,
                                                        vars_poss_num = vars_poss_num,
-                                                       vars_poss_cat = vars_poss_cat)
+                                                       vars_poss_cat = vars_poss_cat,
+                                                       vars_poss_dens_cat = vars_poss_dens_cat)
                 ),
                 dbc.Tab(
                     label = "Table",
