@@ -1,4 +1,4 @@
-manufacturer_name,model_name,thrust_kN,max_takeoff_mass_kg,speed_kmh,range_km,max_altitude_m,length_m,height_m,wing_span_m,country,engine_mount,engine_type,wing_config,main_operator
+manufacturer_name,model_name,thrust_kN,max_takeoff_mass_kg,speed_kmh,range_km,max_altitude_m,length_m,height_m,wing_span_m,manufacturer_country,engine_mount,engine_type,wing_config,main_operator
 AI(R),ATR-42-500,26,18600,500,1326,7500,22.67,7.59,24.57,ITA-FRA,Wings,Turboprop,High,Civil
 AI(R),ATR-72-200,24,21530,530,1528,7600,27.16,7.65,27.05,ITA-FRA,Wings,Turboprop,High,Civil
 Antonov,An-32,49,27000,510,2500,8000,23.78,8.75,29.20,UKR,Wings,Turboprop,High,Military

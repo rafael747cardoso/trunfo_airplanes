@@ -20,6 +20,12 @@ from Funcs.ui_ml_models import tab_ml_models
 df_airplanes = pd.read_csv("Data/airplanes.csv",
                            sep = ",")
 
+# Top airplanes for the cards
+fastest = np.array(df_airplanes.loc[np.where(df_airplanes["speed_kmh"] == max(df_airplanes["speed_kmh"]))].iloc[0])[[0, 1]]
+heaviest = np.array(df_airplanes.loc[np.where(df_airplanes["max_takeoff_mass_kg"] == max(df_airplanes["max_takeoff_mass_kg"]))].iloc[0])[[0, 1]]
+longest = np.array(df_airplanes.loc[np.where(df_airplanes["length_m"] == max(df_airplanes["length_m"]))].iloc[0])[[0, 1]]
+most_potent = np.array(df_airplanes.loc[np.where(df_airplanes["thrust_kN"] == max(df_airplanes["thrust_kN"]))].iloc[0])[[0, 1]]
+
 # Data to show on hovers:
 customdata = list(df_airplanes.columns)
 custom_hovertemplate = ("<b>%{customdata[0]} %{customdata[1]}</b><br><br>" +
@@ -31,19 +37,17 @@ custom_hovertemplate = ("<b>%{customdata[0]} %{customdata[1]}</b><br><br>" +
                         "<b>Length (m) = </b>%{customdata[7]:.2f}<br>" +
                         "<b>Height (m) = </b>%{customdata[8]:.2f}<br>" +
                         "<b>Wing Span (m) = </b>%{customdata[9]:.2f}<br>" +
-                        "<b>Country = </b>%{customdata[10]}<br>" +
+                        "<b>Manufacturer Country = </b>%{customdata[10]}<br>" +
                         "<b>Engine Mount = </b>%{customdata[11]}<br>" +
                         "<b>Engine Type = </b>%{customdata[12]}<br>" +
                         "<b>Wing configuration = </b>%{customdata[13]}<br>" +
                         "<b>Main Operator = </b>%{customdata[14]}")
 
-# Top airplanes for the cards
-fastest = np.array(df_airplanes.loc[np.where(df_airplanes["speed_kmh"] == max(df_airplanes["speed_kmh"]))].iloc[0])[[0, 1]]
-heaviest = np.array(df_airplanes.loc[np.where(df_airplanes["max_takeoff_mass_kg"] == max(df_airplanes["max_takeoff_mass_kg"]))].iloc[0])[[0, 1]]
-longest = np.array(df_airplanes.loc[np.where(df_airplanes["length_m"] == max(df_airplanes["length_m"]))].iloc[0])[[0, 1]]
-most_potent = np.array(df_airplanes.loc[np.where(df_airplanes["thrust_kN"] == max(df_airplanes["thrust_kN"]))].iloc[0])[[0, 1]]
-
 # Possible variables for the selects:
+vars_num = list(df_airplanes.select_dtypes(include = ["int64", "float64"]).columns)
+vars_cat = list(df_airplanes.select_dtypes(include = ["object"]).columns)
+vars_cat = [i for i in vars_cat if i != "model_name"]
+
 vars_poss_num = [
     {"label": "Thrust", "value": "thrust_kN"},
     {"label": "Max Takeoff Mass", "value": "max_takeoff_mass_kg"},
@@ -56,13 +60,30 @@ vars_poss_num = [
 ]
 vars_poss_cat = [
     {"label": "Manufacturer Name", "value": "manufacturer_name"},
-    {"label": "Country", "value": "country"},
+    {"label": "Manufacturer Country", "value": "manufacturer_country"},
     {"label": "Engine Mount", "value": "engine_mount"},
     {"label": "Engine Type", "value": "engine_type"},
     {"label": "Wing Config", "value": "wing_config"},
     {"label": "Main Operator", "value": "main_operator"}
 ]
 
+# Labels for the plots axis:
+axis_plots = {
+    "thrust_kN": "<b style = 'font-size: 14px;'> Thrust (kN)</b>",
+    "max_takeoff_mass_kg": "<b style = 'font-size: 14px;'> Max Takeoff Mass (kg)</b>",
+    "speed_kmh": "<b style = 'font-size: 14px;'> Speed (km/h)</b>",
+    "range_km": "<b style = 'font-size: 14px;'> Range (km)</b>",
+    "max_altitude_m": "<b style = 'font-size: 14px;'> Max Altitude (m)</b>",
+    "length_m": "<b style = 'font-size: 14px;'> Length (m)</b>",
+    "height_m": "<b style = 'font-size: 14px;'> Height (m)</b>",
+    "wing_span_m": "<b style = 'font-size: 14px;'> Wingspan (m)</b>",
+    "manufacturer_name": "<b style = 'font-size: 14px;'> Manufacturer Name</b>",
+    "manufacturer_country": "<b style = 'font-size: 14px;'> Manufacturer Country</b>",
+    "engine_mount": "<b style = 'font-size: 14px;'> Engine Mount</b>",
+    "engine_type": "<b style = 'font-size: 14px;'> Engine Type</b>",
+    "wing_config": "<b style = 'font-size: 14px;'> Wing Config</b>",
+    "main_operator": "<b style = 'font-size: 14px;'> Main Operator</b>"
+}
 
 
 
@@ -98,17 +119,15 @@ def update_plot_scatter_eda(x_scatter_eda,
         size = size_scatter_eda,
         color = color_scatter_eda,
         custom_data = list(df_airplanes.columns),
-        template = "plotly_dark"#,
-        # labels = {"thrust_kN": "<b style = 'font-size: 14px;'>Thrust (kN)</b>",
-        #           "speed_kmh": "<b style = 'font-size: 14px;'>Speed (km/h)</b>",
-        #           "engine_type": "<b style = 'font-size: 14px;'>Engine Type:</b> <br>"}
+        template = "plotly_dark",
+        labels = axis_plots
     )
     plot_scatter_eda.update_traces(
         hovertemplate = custom_hovertemplate
     )
     return (plot_scatter_eda)
 
-
+# 
 
 
 

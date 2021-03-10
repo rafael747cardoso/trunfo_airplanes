@@ -11453,18 +11453,22 @@ a.text-dark:hover, a.text-dark:focus {
 
 #fastest-card {
     background-color: #038ef8;
+    margin: 0 3vmax;
 }
 
 #heaviest-card {
     background-color: #853dc1;
+    margin: 0 3vmax;
 }
 
 #longest-card {
     background-color: #1baa5f;
+    margin: 0 3vmax;
 }
 
 #most_potent-card {
     background-color: #e45e35;
+    margin: 0 3vmax;
 }
 
 /************************************************** Plots */
@@ -11476,9 +11480,6 @@ a.text-dark:hover, a.text-dark:focus {
     padding: 20px
 }
 
-.selectinput-label {
-    
-}
 
 
 

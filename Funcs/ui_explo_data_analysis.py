@@ -24,6 +24,7 @@ def tab_explo_data_analysis(fastest,
         [
             # Cards:
             html.Br(),
+            html.Br(),
             dbc.Row(
                 [
                     dbc.Col(
@@ -57,7 +58,8 @@ def tab_explo_data_analysis(fastest,
                 ]
             ),
             html.Br(),
-    
+            html.Br(),
+
             # Scatter plot:
             dbc.Row(
                 [
@@ -124,7 +126,7 @@ def tab_explo_data_analysis(fastest,
                                         dbc.Col(
                                             [
                                                 dcc.Graph(id = "plot_scatter_eda",
-                                                          figure = {})
+                                                          figure = {"layout": {"height": 650}})
                                             ],
                                             width = 12
                                         )
@@ -143,7 +145,29 @@ def tab_explo_data_analysis(fastest,
             # Density and Pie plots:
             dbc.Row(
                 [
-                    "dens and pie"
+                    # Density:
+                    dbc.Col(
+                        [
+                            
+                        ],
+                        width = 4                        
+                    ),
+                    
+                    # Pie Counts:
+                    dbc.Col(
+                        [
+                            
+                        ],
+                        width = 4
+                    ),
+                    
+                    # Density Mean:
+                    dbc.Col(
+                        [
+                            
+                        ],
+                        width = 4
+                    )
                 ]
             ),
     
