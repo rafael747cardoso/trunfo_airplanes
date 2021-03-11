@@ -11480,8 +11480,9 @@ a.text-dark:hover, a.text-dark:focus {
     padding: 20px
 }
 
-
-
+.Select-menu-outer {
+    color: #2c85ff !important;
+}
 
 
 

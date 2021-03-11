@@ -11,8 +11,7 @@ def tab_explo_data_analysis(fastest,
                             vars_poss_num,
                             vars_poss_cat,
                             vars_poss_dens_cat,
-                            funcs_pie_poss
-                            ):
+                            funcs_pie_poss):
     """
     Makes the UI of the Exploratory Data Analysis tab.
     :param fastest: 
@@ -326,13 +325,57 @@ def tab_explo_data_analysis(fastest,
                     )
                 ]
             ),
+            html.Br(),
 
             # Parallel sets:
             dbc.Row(
                 [
-                    "dsdf"
+                    dbc.Col(
+                        [
+                            dbc.Card(
+                                [
+                                    # Selects:
+                                    dbc.Row(
+                                        [
+                                            dbc.Col(
+                                                [
+                                                    html.H5("Dimnesions",
+                                                            className = "selectinput-label"),
+                                                    dcc.Dropdown(
+                                                        id = "dimensions_parallel_sets_eda",
+                                                        options = vars_poss_cat[1:],
+                                                        value = [vars_poss_cat[i]["value"] for i in range(2, 5)],
+                                                        multi = True
+                                                    )
+                                                ],
+                                                width = 12
+                                            )
+                                        ]
+                                    ),
+                                    # Plot:
+                                    dbc.Row(
+                                        [
+                                            dbc.Col(
+                                                [
+                                                    dcc.Graph(
+                                                        id = "plot_parallel_sets_eda",
+                                                        figure = {"layout": {"height": 600}}
+                                                    )
+                                                ],
+                                                width = 12
+                                            )
+                                        ]
+                                    )
+                                ],
+                                className = "plot-card",
+                                inverse = True
+                            )
+                        ],
+                        width = 12
+                    )
                 ]
-            )
+            ),
+            html.Br()
     
         ]
     )

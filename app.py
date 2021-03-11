@@ -94,7 +94,14 @@ axis_plots = {
     "wing_config": "<b style = 'font-size: 14px;'> Wing Config</b>",
     "main_operator": "<b style = 'font-size: 14px;'> Main Operator</b>"
 }
-
+labels_cat = {
+    "manufacturer_name": "Manufacturer Name",
+    "manufacturer_country": "Manufacturer Country",
+    "engine_mount": "Engine Mount",
+    "engine_type": "Engine Type",
+    "wing_config": "Wing Config",
+    "main_operator": "Main Operator"
+}
 
 
 
@@ -220,16 +227,23 @@ def update_plot_pie_count_eda(x_pie_func_eda,
     return(plot_pie_func_eda)
 
 # Parallel Sets:
-
-
-
-
-
-
-
-
+@app.callback(
+    Output(component_id = "plot_parallel_sets_eda", component_property = "figure"),
+    [Input(component_id = "dimensions_parallel_sets_eda", component_property = "value")]
+)
+def update_plot_parallel_sets_eda(dimensions_parallel_sets_eda):
+    print(dimensions_parallel_sets_eda)
+    plot_parallel_sets_eda = px.parallel_categories(
+        data_frame = df_airplanes,
+        dimensions = dimensions_parallel_sets_eda,
+        template = "plotly_dark",
+        labels = labels_cat
+    )
+    return(plot_parallel_sets_eda)
 
 #################### Table
+
+
 
 
 #################### ML Models
