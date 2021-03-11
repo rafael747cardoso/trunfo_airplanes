@@ -45,10 +45,6 @@ custom_hovertemplate = ("<b>%{customdata[0]} %{customdata[1]}</b><br><br>" +
                         "<b>Main Operator = </b>%{customdata[14]}")
 
 # Possible variables for the selects:
-vars_num = list(df_airplanes.select_dtypes(include = ["int64", "float64"]).columns)
-vars_cat = list(df_airplanes.select_dtypes(include = ["object"]).columns)
-vars_cat = [i for i in vars_cat if i != "model_name"]
-
 vars_poss_num = [
     {"label": "Thrust", "value": "thrust_kN"},
     {"label": "Max Takeoff Mass", "value": "max_takeoff_mass_kg"},
@@ -73,6 +69,12 @@ vars_poss_dens_cat = [
     {"label": "Engine Mount", "value": "engine_mount"},
     {"label": "Engine Type", "value": "engine_type"},
     {"label": "Wing Config", "value": "wing_config"}
+]
+funcs_pie_poss = [
+    {"label": "Mean", "value": "mean"},
+    {"label": "Sum", "value": "sum"},
+    {"label": "Minimum", "value": "min"},
+    {"label": "Maximum", "value": "max"},
 ]
 
 # Labels for the plots axis:
@@ -164,6 +166,66 @@ def update_plot_density_eda(x_density_eda,
         )
     return(plot_density_eda)
 
+# Pie Count:
+@app.callback(
+    Output(component_id = "plot_pie_count_eda", component_property = "figure"),
+    [Input(component_id = "cat_pie_count_eda", component_property = "value")]
+)
+def update_plot_pie_count_eda(cat_pie_count_eda):
+    df = df_airplanes.groupby(cat_pie_count_eda)[cat_pie_count_eda].count()
+    levels_names = list(df.index)
+    levels_counts = list(df)    
+    plot_pie_count_eda = go.Figure(
+        data = go.Pie(
+            labels = levels_names,
+            values = levels_counts
+        )
+    )
+    plot_pie_count_eda.update_layout(
+        autosize = True,
+        template = "plotly_dark"
+    )
+    return(plot_pie_count_eda)
+
+# Pie Func:
+@app.callback(
+    Output(component_id = "plot_pie_func_eda", component_property = "figure"),
+    [Input(component_id = "x_pie_func_eda", component_property = "value"),
+     Input(component_id = "function_pie_func_eda", component_property = "value"),
+     Input(component_id = "cat_pie_func_eda", component_property = "value")]
+)
+def update_plot_pie_count_eda(x_pie_func_eda,
+                              function_pie_func_eda,
+                              cat_pie_func_eda):
+    if function_pie_func_eda == "mean":
+        df = df_airplanes.groupby(cat_pie_func_eda)[x_pie_func_eda].mean().astype(int)
+    if function_pie_func_eda == "sum":
+        df = df_airplanes.groupby(cat_pie_func_eda)[x_pie_func_eda].sum().astype(int)
+    if function_pie_func_eda == "min":
+        df = df_airplanes.groupby(cat_pie_func_eda)[x_pie_func_eda].min().astype(int)
+    if function_pie_func_eda == "max":
+        df = df_airplanes.groupby(cat_pie_func_eda)[x_pie_func_eda].max().astype(int)
+    levels_names = list(df.index)
+    levels_counts = list(df)    
+    plot_pie_func_eda = go.Figure(
+        data = go.Pie(
+            labels = levels_names,
+            values = levels_counts
+        )
+    )
+    plot_pie_func_eda.update_layout(
+        autosize = True,
+        template = "plotly_dark"
+    )   
+    return(plot_pie_func_eda)
+
+# Parallel Sets:
+
+
+
+
+
+
 
 
 
@@ -198,7 +260,8 @@ app.layout = html.Div(
                                                        most_potent = most_potent,
                                                        vars_poss_num = vars_poss_num,
                                                        vars_poss_cat = vars_poss_cat,
-                                                       vars_poss_dens_cat = vars_poss_dens_cat)
+                                                       vars_poss_dens_cat = vars_poss_dens_cat,
+                                                       funcs_pie_poss = funcs_pie_poss)
                 ),
                 dbc.Tab(
                     label = "Table",

@@ -10,7 +10,8 @@ def tab_explo_data_analysis(fastest,
                             most_potent,
                             vars_poss_num,
                             vars_poss_cat,
-                            vars_poss_dens_cat
+                            vars_poss_dens_cat,
+                            funcs_pie_poss
                             ):
     """
     Makes the UI of the Exploratory Data Analysis tab.
@@ -18,6 +19,10 @@ def tab_explo_data_analysis(fastest,
     :param heaviest: 
     :param longest: 
     :param most_potent: 
+    :param vars_poss_num:
+    :param vars_poss_cat:
+    :param vars_poss_dens_cat:
+    :param funcs_pie_poss:
     :return: 
     """
     
@@ -206,18 +211,126 @@ def tab_explo_data_analysis(fastest,
                     )
                 ]
             ),
+            html.Br(),
             
             # Pies:
             dbc.Row(
                 [
-                    "pie 1 pie 2"
+                    # Pie Count:
+                    dbc.Col(
+                        [
+                            dbc.Card(
+                                [
+                                    # Selects:
+                                    dbc.Row(
+                                        [
+                                            dbc.Col(
+                                                [
+                                                    html.H5("Category",
+                                                            className = "selectinput-label"),
+                                                    dbc.Select(
+                                                        id = "cat_pie_count_eda",
+                                                        options = vars_poss_cat[1:],
+                                                        value = vars_poss_cat[1]["value"]
+                                                    )
+                                                ],
+                                                width = 12
+                                            )
+                                        ]
+                                    ),
+                                    
+                                    # Plot:
+                                    dbc.Row(
+                                        [
+                                            dbc.Col(
+                                                [
+                                                    dcc.Graph(id = "plot_pie_count_eda",
+                                                              figure = {"layout": {"height": 600}})
+                                                ],
+                                                width = 12
+                                            )
+                                        ]
+                                    )
+                                ],
+                                className = "plot-card",
+                                inverse = True
+                            )
+                        ],
+                        width = 6
+                    ),
+                    
+                    # Pie Func:
+                    dbc.Col(
+                        [
+                            dbc.Card(
+                                [
+                                    # Selects:
+                                    dbc.Row(
+                                        [
+                                            dbc.Col(
+                                                [
+                                                    html.H5("Value",
+                                                            className = "selectinput-label"),
+                                                    dbc.Select(
+                                                        id = "x_pie_func_eda",
+                                                        options = vars_poss_num,
+                                                        value = vars_poss_num[0]["value"]
+                                                    )
+                                                ],
+                                                width = 4
+                                            ),
+                                            dbc.Col(
+                                                [
+                                                    html.H5("Function",
+                                                            className = "selectinput-label"),
+                                                    dbc.Select(
+                                                        id = "function_pie_func_eda",
+                                                        options = funcs_pie_poss,
+                                                        value = funcs_pie_poss[0]["value"]
+                                                    )
+                                                ],
+                                                width = 4
+                                            ),
+                                            dbc.Col(
+                                                [
+                                                    html.H5("Category",
+                                                            className = "selectinput-label"),
+                                                    dbc.Select(
+                                                        id = "cat_pie_func_eda",
+                                                        options = vars_poss_cat[1:],
+                                                        value = vars_poss_cat[1]["value"]
+                                                    )
+                                                ],
+                                                width = 4
+                                            )
+                                        ]
+                                    ),
+                                    # Plot:
+                                    dbc.Row(
+                                        [
+                                            dbc.Col(
+                                                [
+                                                    dcc.Graph(id = "plot_pie_func_eda",
+                                                              figure = {"layout": {"height": 600}})
+                                                ],
+                                                width = 12
+                                            )
+                                        ]
+                                    )
+                                ],
+                                className = "plot-card",
+                                inverse = True
+                            )
+                        ],
+                        width = 6
+                    )
                 ]
             ),
 
             # Parallel sets:
             dbc.Row(
                 [
-                    "parallel"
+                    "dsdf"
                 ]
             )
     
