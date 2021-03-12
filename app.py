@@ -9,7 +9,7 @@ import dash_html_components as html
 import dash_bootstrap_components as dbc
 from dash.dependencies import Input, Output
 import operator
-# import dash_table
+import dash_table
 
 from Funcs.ui_explo_data_analysis import tab_explo_data_analysis
 from Funcs.ui_table import tab_table
@@ -50,10 +50,6 @@ nice_names = [
     "Wing Config",
     "Main Operator"
 ]
-var_names_all = df_airplanes.columns.copy()
-for i in range(len(nice_names)):
-    var_names_all.values[var_names_all == df_airplanes.columns[i]] = nice_names[i]
-
 customdata = list(df_airplanes.columns)
 custom_hovertemplate = ("<b>%{customdata[0]} %{customdata[1]}</b><br><br>" +
                         "<b>Thrust (kN) = </b>%{customdata[2]}<br>" +
@@ -69,8 +65,6 @@ custom_hovertemplate = ("<b>%{customdata[0]} %{customdata[1]}</b><br><br>" +
                         "<b>Engine Type = </b>%{customdata[12]}<br>" +
                         "<b>Wing configuration = </b>%{customdata[13]}<br>" +
                         "<b>Main Operator = </b>%{customdata[14]}")
-
-# Labels for the plots axis:
 axis_plots = {
     "thrust_kN": "<b style = 'font-size: 14px;'> Thrust (kN)</b>",
     "max_takeoff_mass_kg": "<b style = 'font-size: 14px;'> Max Takeoff Mass (kg)</b>",
@@ -292,34 +286,48 @@ def update_plot_parallel_sets_eda(dimensions_parallel_sets_eda):
 
 #################### Table
 
-# @app.callback(
-#     Output(component_id = "div_table", component_property = "children"),
-#     [Input(component_id = "table_filter_var_name", component_property = "value"),
-#      Input(component_id = "table_filter_operation", component_property = "value"),
-#      Input(component_id = "table_filter_var_value", component_property = "value")]
-# )
-# def update_table(table_filter_var_name,
-#                  table_filter_operation,
-#                  table_filter_var_value):
-#     # Filter:
-#     op_func = ops[table_filter_operation]
-#     df = df_airplanes[op_func(df_airplanes[table_filter_var_name], table_filter_var_value)]
-#     
-#     # Table:
-#     table = dash_table.DataTable(
-#         id = "table_data",
-#         # columns = [{"name": c, "id": c} for c in var_names_all],
-#         columns = [{"name": c, "id": c} for c in df.columns],
-#         data = df.to_dict("records"),
-#         style_as_list_view = True,
-#         style_header = {'backgroundColor': 'rgb(30, 30, 30)'},
-#         style_cell = {
-#             'backgroundColor': 'rgb(50, 50, 50)',
-#             'color': 'white'
-#         }
-#     )
-#     
-#     return(table)
+@app.callback(
+    Output(component_id = "div_table", component_property = "children"),
+    [Input(component_id = "table_filter_var_name", component_property = "value"),
+     Input(component_id = "table_filter_operation", component_property = "value"),
+     Input(component_id = "table_filter_var_value", component_property = "value")#,
+     # Input(component_id = "button_filters", component_property = "n_clicks")
+     ]
+)   
+def update_table(table_filter_var_name,
+                 table_filter_operation,
+                 table_filter_var_value#,
+                 # button_filters
+                 ):
+    # Filter:
+    # if button_filters is None:
+    #     df = df_airplanes
+    # else:
+    op_func = ops[table_filter_operation]
+    df = df_airplanes[op_func(df_airplanes[table_filter_var_name], table_filter_var_value)]
+
+    # Table:
+    table = dash_table.DataTable(
+        id = "table_data",
+        columns = [{"name": c, "id": c} for c in df.columns],
+        data = df.to_dict("records"),
+        page_size = 15,
+        style_as_list_view = True,
+        style_header = {"backgroundColor": "rgb(30, 30, 30)"},
+        style_cell = {
+            "backgroundColor": "rgb(50, 50, 50)",
+            "color": "white"
+        },
+        style_cell_conditional = [
+            {'if': {'column_id': 'manufacturer_name'},
+             'width': '500px'}
+        ]
+        
+        
+        
+    )
+
+    return(table)
 
 
 
