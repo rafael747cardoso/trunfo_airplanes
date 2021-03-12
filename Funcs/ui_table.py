@@ -57,13 +57,7 @@ def tab_table(vars_poss_num,
                                             ),
                                             dbc.Col(
                                                 [
-                                                    # dbc.Button(
-                                                    #     id = "button_filters",
-                                                    #     children = "No Filters",
-                                                    #     className = "mr-1",
-                                                    #     color = "info",
-                                                    #     block = True
-                                                    # )
+                                                    
                                                 ],
                                                 width = {"size": 2, "offset": 1}
                                             )

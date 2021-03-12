@@ -290,43 +290,42 @@ def update_plot_parallel_sets_eda(dimensions_parallel_sets_eda):
     Output(component_id = "div_table", component_property = "children"),
     [Input(component_id = "table_filter_var_name", component_property = "value"),
      Input(component_id = "table_filter_operation", component_property = "value"),
-     Input(component_id = "table_filter_var_value", component_property = "value")#,
-     # Input(component_id = "button_filters", component_property = "n_clicks")
+     Input(component_id = "table_filter_var_value", component_property = "value")
      ]
 )   
 def update_table(table_filter_var_name,
                  table_filter_operation,
-                 table_filter_var_value#,
-                 # button_filters
+                 table_filter_var_value
                  ):
     # Filter:
-    # if button_filters is None:
-    #     df = df_airplanes
-    # else:
     op_func = ops[table_filter_operation]
     df = df_airplanes[op_func(df_airplanes[table_filter_var_name], table_filter_var_value)]
-
+    df.columns = nice_names
+    
     # Table:
     table = dash_table.DataTable(
         id = "table_data",
         columns = [{"name": c, "id": c} for c in df.columns],
         data = df.to_dict("records"),
-        page_size = 15,
+        page_size = 18,
         style_as_list_view = True,
-        style_header = {"backgroundColor": "rgb(30, 30, 30)"},
+        style_header = {
+            "backgroundColor": "rgb(30, 30, 30)"
+        },
         style_cell = {
             "backgroundColor": "rgb(50, 50, 50)",
-            "color": "white"
+            "color": "white",
+            "textAlign": "center"
         },
         style_cell_conditional = [
-            {'if': {'column_id': 'manufacturer_name'},
-             'width': '500px'}
-        ]
-        
-        
-        
+            {"if": {"column_id": ["Manufacturer Name", 
+                                  "Model Name"]},
+             "textAlign": "left"}
+        ],
+        style_table = {
+            "overflowX": "auto"
+        }        
     )
-
     return(table)
 
 
@@ -352,7 +351,7 @@ app.layout = html.Div(
         dbc.Tabs(
             [
                 dbc.Tab(
-                    label = "Eploratory Data Analysis",
+                    label = "Exploratory Data Analysis",
                     children = tab_explo_data_analysis(fastest = fastest,
                                                        heaviest = heaviest,
                                                        longest = longest,
