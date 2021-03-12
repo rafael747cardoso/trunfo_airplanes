@@ -250,7 +250,18 @@ def update_plot_parallel_sets_eda(dimensions_parallel_sets_eda):
     return(plot_parallel_sets_eda)
 
 #################### Table
-# only when will put a datatable with filters
+
+@app.callback(
+    Output(component_id = "div_table", component_property = "children"),
+    [Input(component_id = "table_filter_var_name", component_property = "value")]
+)
+def update_table(table_filter_var_name):
+    df = df_airplanes[table_filter_var_name]
+    table = dbc.Table.from_dataframe(
+        
+    )
+    return(table)
+
 
 #################### ML Models
 
@@ -285,7 +296,7 @@ app.layout = html.Div(
                 ),
                 dbc.Tab(
                     label = "Table",
-                    children = tab_table(df_table = df_airplanes)
+                    children = tab_table(vars_poss_num = vars_poss_num)
                 ),
                 dbc.Tab(
                     label = "Machine Learning Models",
