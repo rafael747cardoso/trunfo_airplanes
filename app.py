@@ -9,10 +9,14 @@ import dash_html_components as html
 import dash_bootstrap_components as dbc
 from dash.dependencies import Input, Output
 import operator
+# import dash_table
+
 from Funcs.ui_explo_data_analysis import tab_explo_data_analysis
 from Funcs.ui_table import tab_table
 from Funcs.ui_ml_models import tab_ml_models
 
+pd.set_option("display.width", 1200)
+pd.set_option("display.max_columns", 20)
 
 
 #-----------------------------------------------------------------------------------------------------------------------
@@ -28,7 +32,28 @@ heaviest = np.array(df_airplanes.loc[np.where(df_airplanes["max_takeoff_mass_kg"
 longest = np.array(df_airplanes.loc[np.where(df_airplanes["length_m"] == max(df_airplanes["length_m"]))].iloc[0])[[0, 1]]
 most_potent = np.array(df_airplanes.loc[np.where(df_airplanes["thrust_kN"] == max(df_airplanes["thrust_kN"]))].iloc[0])[[0, 1]]
 
-# Data to show on hovers:
+# Nice labels:
+nice_names = [
+    "Manufacturer Name",
+    "Model Name",
+    "Thrust (kN)",
+    "Max Takeoff Mass (kg)",
+    "Speed (km/h)",
+    "Range (km)",
+    "Max Altitude (m)",
+    "Lenght (m)",
+    "Height (m)",
+    "Wingspan (m)",
+    "Manufacturer Country",
+    "Engine Mount",
+    "Engine Type",
+    "Wing Config",
+    "Main Operator"
+]
+var_names_all = df_airplanes.columns.copy()
+for i in range(len(nice_names)):
+    var_names_all.values[var_names_all == df_airplanes.columns[i]] = nice_names[i]
+
 customdata = list(df_airplanes.columns)
 custom_hovertemplate = ("<b>%{customdata[0]} %{customdata[1]}</b><br><br>" +
                         "<b>Thrust (kN) = </b>%{customdata[2]}<br>" +
@@ -104,18 +129,18 @@ funcs_pie_poss = [
     {"label": "Maximum", "value": "max"},
 ]
 filter_operations_poss = [
-    {"label": "<", "value": "<"},
-    {"label": "<=", "value": "<="},
-    {"label": "==", "value": "=="},
     {"label": ">=", "value": ">="},
-    {"label": ">", "value": ">"}
+    {"label": ">", "value": ">"},
+    {"label": "==", "value": "=="},
+    {"label": "<", "value": "<"},
+    {"label": "<=", "value": "<="}
 ]
 ops = {
-    "<": operator.lt,
-    "<=": operator.le,
-    "==": operator.eq,
     ">=": operator.ge,
     ">": operator.gt,
+    "==": operator.eq,
+    "<": operator.lt,
+    "<=": operator.le
 }
 
 
@@ -267,26 +292,34 @@ def update_plot_parallel_sets_eda(dimensions_parallel_sets_eda):
 
 #################### Table
 
-@app.callback(
-    Output(component_id = "div_table", component_property = "children"),
-    [Input(component_id = "table_filter_var_name", component_property = "value"),
-     Input(component_id = "table_filter_operation", component_property = "value"),
-     Input(component_id = "table_filter_var_value", component_property = "value")]
-)
-def update_table(table_filter_var_name,
-                 table_filter_operation,
-                 table_filter_var_value):
-    op_func = ops[table_filter_operation]
-    df = df_airplanes[op_func(df_airplanes[table_filter_var_name], table_filter_var_value)]
-    table = dbc.Table.from_dataframe(
-        df = df,
-        striped = True, 
-        bordered = True, 
-        hover = True,
-        responsive = True
-    )
-    return(table)
-
+# @app.callback(
+#     Output(component_id = "div_table", component_property = "children"),
+#     [Input(component_id = "table_filter_var_name", component_property = "value"),
+#      Input(component_id = "table_filter_operation", component_property = "value"),
+#      Input(component_id = "table_filter_var_value", component_property = "value")]
+# )
+# def update_table(table_filter_var_name,
+#                  table_filter_operation,
+#                  table_filter_var_value):
+#     # Filter:
+#     op_func = ops[table_filter_operation]
+#     df = df_airplanes[op_func(df_airplanes[table_filter_var_name], table_filter_var_value)]
+#     
+#     # Table:
+#     table = dash_table.DataTable(
+#         id = "table_data",
+#         # columns = [{"name": c, "id": c} for c in var_names_all],
+#         columns = [{"name": c, "id": c} for c in df.columns],
+#         data = df.to_dict("records"),
+#         style_as_list_view = True,
+#         style_header = {'backgroundColor': 'rgb(30, 30, 30)'},
+#         style_cell = {
+#             'backgroundColor': 'rgb(50, 50, 50)',
+#             'color': 'white'
+#         }
+#     )
+#     
+#     return(table)
 
 
 

@@ -22,7 +22,7 @@ def tab_table(vars_poss_num,
                         [
                             dbc.Card(
                                 [
-                                    
+                                    # Filters:
                                     dbc.Row(
                                         [
                                             dbc.Col(
@@ -43,31 +43,43 @@ def tab_table(vars_poss_num,
                                                         value = filter_operations_poss[0]["value"]
                                                     )
                                                 ],
-                                                width = 4
+                                                width = 2
                                             ),
                                             dbc.Col(
                                                 [
                                                     dbc.Input(
                                                         id = "table_filter_var_value",
-                                                        type = "number"                                                        
+                                                        type = "number",
+                                                        value = 0
                                                     )
                                                 ],
-                                                width = 4
+                                                width = 3
+                                            ),
+                                            dbc.Col(
+                                                [
+                                                    dbc.Button(
+                                                        id = "button_no_filters",
+                                                        children = "No Filters",
+                                                        className = "mr-1",
+                                                        color = "info",
+                                                        block = True
+                                                    )
+                                                ],
+                                                width = {"size": 2, "offset": 1}
                                             )
                                         ]
                                     ),
-                                    # A button for the filter here
                                     
-                                    
+                                    # Table:
                                     dbc.Row(
                                         [
                                             dbc.Col(
                                                 [
-                                                    html.Div(
-                                                        id = "div_table",
-                                                        children = "",
-                                                        className = "table-data"
-                                                    )
+                                                    # html.Div(
+                                                    #     id = "div_table",
+                                                    #     children = "",
+                                                    #     className = "table-data"
+                                                    # )
                                                 ],
                                                 width = 12
                                             )
