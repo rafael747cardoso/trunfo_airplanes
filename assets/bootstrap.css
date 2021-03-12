@@ -11491,5 +11491,9 @@ a.text-dark:hover, a.text-dark:focus {
     padding: 20px
 }
 
+.table-data {
+    margin: 25px 0px;
+}
+
 
 

@@ -8,6 +8,7 @@ import dash_core_components as dcc
 import dash_html_components as html
 import dash_bootstrap_components as dbc
 from dash.dependencies import Input, Output
+import operator
 from Funcs.ui_explo_data_analysis import tab_explo_data_analysis
 from Funcs.ui_table import tab_table
 from Funcs.ui_ml_models import tab_ml_models
@@ -44,6 +45,32 @@ custom_hovertemplate = ("<b>%{customdata[0]} %{customdata[1]}</b><br><br>" +
                         "<b>Wing configuration = </b>%{customdata[13]}<br>" +
                         "<b>Main Operator = </b>%{customdata[14]}")
 
+# Labels for the plots axis:
+axis_plots = {
+    "thrust_kN": "<b style = 'font-size: 14px;'> Thrust (kN)</b>",
+    "max_takeoff_mass_kg": "<b style = 'font-size: 14px;'> Max Takeoff Mass (kg)</b>",
+    "speed_kmh": "<b style = 'font-size: 14px;'> Speed (km/h)</b>",
+    "range_km": "<b style = 'font-size: 14px;'> Range (km)</b>",
+    "max_altitude_m": "<b style = 'font-size: 14px;'> Max Altitude (m)</b>",
+    "length_m": "<b style = 'font-size: 14px;'> Length (m)</b>",
+    "height_m": "<b style = 'font-size: 14px;'> Height (m)</b>",
+    "wing_span_m": "<b style = 'font-size: 14px;'> Wingspan (m)</b>",
+    "manufacturer_name": "<b style = 'font-size: 14px;'> Manufacturer Name</b>",
+    "manufacturer_country": "<b style = 'font-size: 14px;'> Manufacturer Country</b>",
+    "engine_mount": "<b style = 'font-size: 14px;'> Engine Mount</b>",
+    "engine_type": "<b style = 'font-size: 14px;'> Engine Type</b>",
+    "wing_config": "<b style = 'font-size: 14px;'> Wing Config</b>",
+    "main_operator": "<b style = 'font-size: 14px;'> Main Operator</b>"
+}
+labels_cat = {
+    "manufacturer_name": "Manufacturer Name",
+    "manufacturer_country": "Manufacturer Country",
+    "engine_mount": "Engine Mount",
+    "engine_type": "Engine Type",
+    "wing_config": "Wing Config",
+    "main_operator": "Main Operator"
+}
+
 # Possible variables for the selects:
 vars_poss_num = [
     {"label": "Thrust", "value": "thrust_kN"},
@@ -76,32 +103,21 @@ funcs_pie_poss = [
     {"label": "Minimum", "value": "min"},
     {"label": "Maximum", "value": "max"},
 ]
+filter_operations_poss = [
+    {"label": "<", "value": "<"},
+    {"label": "<=", "value": "<="},
+    {"label": "==", "value": "=="},
+    {"label": ">=", "value": ">="},
+    {"label": ">", "value": ">"}
+]
+ops = {
+    "<": operator.lt,
+    "<=": operator.le,
+    "==": operator.eq,
+    ">=": operator.ge,
+    ">": operator.gt,
+}
 
-# Labels for the plots axis:
-axis_plots = {
-    "thrust_kN": "<b style = 'font-size: 14px;'> Thrust (kN)</b>",
-    "max_takeoff_mass_kg": "<b style = 'font-size: 14px;'> Max Takeoff Mass (kg)</b>",
-    "speed_kmh": "<b style = 'font-size: 14px;'> Speed (km/h)</b>",
-    "range_km": "<b style = 'font-size: 14px;'> Range (km)</b>",
-    "max_altitude_m": "<b style = 'font-size: 14px;'> Max Altitude (m)</b>",
-    "length_m": "<b style = 'font-size: 14px;'> Length (m)</b>",
-    "height_m": "<b style = 'font-size: 14px;'> Height (m)</b>",
-    "wing_span_m": "<b style = 'font-size: 14px;'> Wingspan (m)</b>",
-    "manufacturer_name": "<b style = 'font-size: 14px;'> Manufacturer Name</b>",
-    "manufacturer_country": "<b style = 'font-size: 14px;'> Manufacturer Country</b>",
-    "engine_mount": "<b style = 'font-size: 14px;'> Engine Mount</b>",
-    "engine_type": "<b style = 'font-size: 14px;'> Engine Type</b>",
-    "wing_config": "<b style = 'font-size: 14px;'> Wing Config</b>",
-    "main_operator": "<b style = 'font-size: 14px;'> Main Operator</b>"
-}
-labels_cat = {
-    "manufacturer_name": "Manufacturer Name",
-    "manufacturer_country": "Manufacturer Country",
-    "engine_mount": "Engine Mount",
-    "engine_type": "Engine Type",
-    "wing_config": "Wing Config",
-    "main_operator": "Main Operator"
-}
 
 
 
@@ -253,14 +269,25 @@ def update_plot_parallel_sets_eda(dimensions_parallel_sets_eda):
 
 @app.callback(
     Output(component_id = "div_table", component_property = "children"),
-    [Input(component_id = "table_filter_var_name", component_property = "value")]
+    [Input(component_id = "table_filter_var_name", component_property = "value"),
+     Input(component_id = "table_filter_operation", component_property = "value"),
+     Input(component_id = "table_filter_var_value", component_property = "value")]
 )
-def update_table(table_filter_var_name):
-    df = df_airplanes[table_filter_var_name]
+def update_table(table_filter_var_name,
+                 table_filter_operation,
+                 table_filter_var_value):
+    op_func = ops[table_filter_operation]
+    df = df_airplanes[op_func(df_airplanes[table_filter_var_name], table_filter_var_value)]
     table = dbc.Table.from_dataframe(
-        
+        df = df,
+        striped = True, 
+        bordered = True, 
+        hover = True,
+        responsive = True
     )
     return(table)
+
+
 
 
 #################### ML Models
@@ -296,7 +323,8 @@ app.layout = html.Div(
                 ),
                 dbc.Tab(
                     label = "Table",
-                    children = tab_table(vars_poss_num = vars_poss_num)
+                    children = tab_table(vars_poss_num = vars_poss_num,
+                                         filter_operations_poss = filter_operations_poss)
                 ),
                 dbc.Tab(
                     label = "Machine Learning Models",
