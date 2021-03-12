@@ -339,7 +339,7 @@ def tab_explo_data_analysis(fastest,
                                         [
                                             dbc.Col(
                                                 [
-                                                    html.H5("Dimnesions",
+                                                    html.H5("Dimensions",
                                                             className = "selectinput-label"),
                                                     dcc.Dropdown(
                                                         id = "dimensions_parallel_sets_eda",
@@ -348,7 +348,7 @@ def tab_explo_data_analysis(fastest,
                                                         multi = True
                                                     )
                                                 ],
-                                                width = 12
+                                                width = {"size": 8, "offset": 2}
                                             )
                                         ]
                                     ),

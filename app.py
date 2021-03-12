@@ -232,19 +232,25 @@ def update_plot_pie_count_eda(x_pie_func_eda,
     [Input(component_id = "dimensions_parallel_sets_eda", component_property = "value")]
 )
 def update_plot_parallel_sets_eda(dimensions_parallel_sets_eda):
-    print(dimensions_parallel_sets_eda)
-    plot_parallel_sets_eda = px.parallel_categories(
-        data_frame = df_airplanes,
-        dimensions = dimensions_parallel_sets_eda,
-        template = "plotly_dark",
-        labels = labels_cat
+    vars_cat = []
+    for i in range(len(vars_poss_cat)):
+        if vars_poss_cat[i]["value"] in dimensions_parallel_sets_eda:
+            vars_cat += [vars_poss_cat[i]]
+    dimensions_parcat = [go.parcats.Dimension(values = df_airplanes[vars_cat[i]["value"]], 
+                                              label = vars_cat[i]["label"]) for i in range(len(vars_cat))]
+    plot_parallel_sets_eda = go.Figure(
+        data = go.Parcats(
+            dimensions = dimensions_parcat,
+            line = {"shape": "hspline"}
+        )
     )
+    plot_parallel_sets_eda.update_layout(
+        template = "plotly_dark"
+    )   
     return(plot_parallel_sets_eda)
 
 #################### Table
-
-
-
+# only when will put a datatable with filters
 
 #################### ML Models
 
@@ -279,7 +285,7 @@ app.layout = html.Div(
                 ),
                 dbc.Tab(
                     label = "Table",
-                    children = tab_table()
+                    children = tab_table(df_table = df_airplanes)
                 ),
                 dbc.Tab(
                     label = "Machine Learning Models",

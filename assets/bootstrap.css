@@ -11484,7 +11484,12 @@ a.text-dark:hover, a.text-dark:focus {
     color: #2c85ff !important;
 }
 
+/************************************************** Table */
 
+.table-card {
+    text-align: center;
+    padding: 20px
+}
 
 
 
