@@ -24,84 +24,91 @@ def tab_ml_models(plot_logit_1,
                         [
                             dbc.Card(
                                 [
-                                    dbc.Row(
-                                        dbc.Col(
-                                            [
-                                                html.H3("Civil/Military Classification with Logistic Regression",
-                                                        className = "title-model")
-                                            ],
-                                            width = 12
-                                        )
-                                    ),
-                                    html.Br(),
-
-                                    # Plots:
-                                    dbc.Row(
+                                    dbc.Col(
                                         [
-                                            dbc.Col(
-                                                [
-                                                    dbc.Card(
-                                                        [
-                                                            dbc.Col(
-                                                                [
-                                                                    dcc.Graph(
-                                                                        figure = plot_logit_1
-                                                                    )
-                                                                ],
-                                                                width = 12
-                                                            )
-                                                        ],
-                                                        className = "plot-card",
-                                                        inverse = True
-                                                    )
-                                                ],
-                                                width = 6
+                                            html.Br(),
+                                            dbc.Row(
+                                                dbc.Col(
+                                                    [
+                                                        html.H3("Civil/Military Classification with Logistic Regression",
+                                                                className = "title-model")
+                                                    ],
+                                                    width = 12
+                                                )
                                             ),
-                                            dbc.Col(
+                                            html.Br(),
+                                            html.Br(),
+
+                                            # Plots:
+                                            dbc.Row(
                                                 [
-                                                    dbc.Card(
+                                                    dbc.Col(
                                                         [
-                                                            dbc.Col(
+                                                            dbc.Card(
                                                                 [
-                                                                    dcc.Graph(
-                                                                        figure = plot_logit_2
+                                                                    dbc.Col(
+                                                                        [
+                                                                            dcc.Graph(
+                                                                                figure = plot_logit_1
+                                                                            )
+                                                                        ],
+                                                                        width = 12
                                                                     )
                                                                 ],
-                                                                width = 12
+                                                                className = "plot-card",
+                                                                inverse = True
                                                             )
                                                         ],
-                                                        className = "plot-card",
-                                                        inverse = True
-                                                    )
-                                                ],
-                                                width = 6
-                                            )
-                                        ]
-                                    ),
-
-                                    # Model Summary:
-                                    dbc.Row(
-                                        [
-                                            dbc.Col(
-                                                [
-                                                    dbc.Card(
+                                                        width = 6
+                                                    ),
+                                                    dbc.Col(
                                                         [
-                                                            dbc.Col(
+                                                            dbc.Card(
                                                                 [
-                                                                    "Model summary"
+                                                                    dbc.Col(
+                                                                        [
+                                                                            dcc.Graph(
+                                                                                figure = plot_logit_2
+                                                                            )
+                                                                        ],
+                                                                        width = 12
+                                                                    )
                                                                 ],
-                                                                width = 12
+                                                                className = "plot-card",
+                                                                inverse = True
                                                             )
                                                         ],
-                                                        className = "plot-card",
-                                                        inverse = True
+                                                        width = 6
                                                     )
-                                                ],
-                                                width = 12
-                                            )
-                                        ]
-                                    )
+                                                ]
+                                            ),
+                                            html.Br(),
 
+                                            # Model Summary:
+                                            dbc.Row(
+                                                [
+                                                    dbc.Col(
+                                                        [
+                                                            dbc.Card(
+                                                                [
+                                                                    dbc.Col(
+                                                                        [
+                                                                            "Model summary"
+                                                                        ],
+                                                                        width = 12
+                                                                    )
+                                                                ],
+                                                                className = "plot-card",
+                                                                inverse = True
+                                                            )
+                                                        ],
+                                                        width = 12
+                                                    )
+                                                ]
+                                            )
+                                        ],
+                                        width = 12
+                                    )
                                 ],
                                 className = "plot-card",
                                 inverse = True

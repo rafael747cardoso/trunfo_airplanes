@@ -359,7 +359,15 @@ def update_table(table_filter_num_var_name,
 
 #################### ML Models
 
-### Logistic Regression Model
+### Logistic Regression
+
+# Model:
+
+
+
+
+
+
 def update_plot_logit_1():
     plot = px.histogram(
         data_frame = df_airplanes,
@@ -379,6 +387,9 @@ def update_plot_logit_2():
     )
     return(plot)
 plot_logit_2 = update_plot_logit_2()
+
+
+
 
 
 
