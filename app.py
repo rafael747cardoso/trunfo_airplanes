@@ -359,6 +359,32 @@ def update_table(table_filter_num_var_name,
 
 #################### ML Models
 
+### Logistic Regression Model
+def update_plot_logit_1():
+    plot = px.histogram(
+        data_frame = df_airplanes,
+        x = "speed_kmh",
+        nbins = 100,
+        template = "plotly_dark"
+    )
+    return(plot)
+plot_logit_1 = update_plot_logit_1()
+
+def update_plot_logit_2():
+    plot = px.histogram(
+        data_frame = df_airplanes,
+        x = "height_m",
+        nbins = 100,
+        template = "plotly_dark"
+    )
+    return(plot)
+plot_logit_2 = update_plot_logit_2()
+
+
+
+
+
+### k-Means Clustering
 
 
 
@@ -401,7 +427,8 @@ app.layout = html.Div(
                 ),
                 dbc.Tab(
                     label = "Machine Learning Models",
-                    children = tab_ml_models()
+                    children = tab_ml_models(plot_logit_1 = plot_logit_1,
+                                             plot_logit_2 = plot_logit_2)
                 )
             ]
         )
