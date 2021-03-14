@@ -426,36 +426,31 @@ print(classification_report(y_true = y,
 y_prob = model.predict_proba(x)[:, 1]
 fpr, tpr, thresholds = roc_curve(y, y_prob)
 AUC = auc(fpr, tpr)
-df_roc = pd.DataFrame({"fpr": fpr,
-                       "tpr": tpr,
+df_roc = pd.DataFrame({"fpr": fpr.round(3),
+                       "tpr": tpr.round(3),
                        "thresholds": thresholds.round(3)})
 
 fig = px.area(
     data_frame = df_roc,
     x = "fpr", 
     y = "tpr",
-    hover_name = "thresholds"
-    # title = f"ROC Curve (AUC={AUC:.4f})",
-    # labels = {
-    #     "x": "False Positive Rate",
-    #     "y": "True Positive Rate"
-    # }
+    hover_data = ["thresholds"],
+    title = f"ROC Curve (AUC={AUC:.3f})",
+    labels = {
+        "fpr": "False Positive Rate",
+        "tpr": "True Positive Rate",
+        "thresholds": "Threshold"
+    }
+).add_shape(
+    type = "line", 
+    line = {"dash": "dash"},
+    x0 = 0,
+    x1 = 1,
+    y0 = 0,
+    y1 = 1
 ).show()
-    .update_traces(
-    hovertemplate = "Thresholds = %{thresholds}"
-).show()
 
-
-
-# .add_shape(
-#     type = "line", 
-#     line = {"dash": "dash"},
-#     x0 = 0,
-#     x1 = 1,
-#     y0 = 0,
-#     y1 = 1
-# )
-
+# Plot of probability distribution of the populations (0 and 1):
 
 
 
