@@ -393,7 +393,7 @@ fig = px.line(
     x = df_funcs["speed"],
     y = df_funcs["p"]
 ).add_scatter(
-    x = df["speed_kmh"],
+    x = df["max_takeoff_mass_kg"],
     y = df["is_military"],
     mode = "markers"
 ).show()
@@ -409,6 +409,7 @@ cm = pd.DataFrame(
 )
 print("Confusion matrix: ")
 print(cm)
+
 fig = px.imshow(
     img = cm,
     labels = {
@@ -424,8 +425,6 @@ print(classification_report(y_true = y,
                             output_dict = False))
 
 # ROC curve:
-
-
 y_prob = model.predict_proba(x)[:, 1]
 fpr, tpr, thresholds = roc_curve(y, y_prob)
 auc = roc_auc_score(y_true = y,
@@ -454,46 +453,30 @@ fig = px.area(
     y1 = 1
 ).show()
 
-# Plot of probability distribution of the populations (0 and 1):
-
-fig = px.histogram(
-    x = model.predict_proba(x)[:, 1][np.where(model.predict(x) == 0)],
-    nbins = 20
-).show()
-
-fig = px.histogram(
-    x = model.predict_proba(x)[:, 1][np.where(model.predict(x) == 1)],
-    nbins = 20
-).show()
+# Plot of probability distributions of the populations:
+threshold = 0.5
+prob_distr_TN = model.predict_proba(x)[:, 1][np.where(y == 0)]
+prob_distr_TN = prob_distr_TN[prob_distr_TN < threshold]/sum(model.predict_proba(x)[:, 1])
+prob_distr_TP = model.predict_proba(x)[:, 1][np.where(y == 1)]
+prob_distr_TP = prob_distr_TP[prob_distr_TP >= threshold]/sum(model.predict_proba(x)[:, 1])
+prob_distr_FN = model.predict_proba(x)[:, 1][np.where(y == 1)]
+prob_distr_FN = prob_distr_FN[prob_distr_FN < threshold]/sum(model.predict_proba(x)[:, 1])
+prob_distr_FP = model.predict_proba(x)[:, 1][np.where(y == 0)]
+prob_distr_FP = prob_distr_FP[prob_distr_FP >= threshold]/sum(model.predict_proba(x)[:, 1])
 
 fig = ff.create_distplot(
-    hist_data = [model.predict_proba(x)[:, 1][np.where(model.predict(x) == 0)],
-                 model.predict_proba(x)[:, 1][np.where(model.predict(x) == 1)]],
-    group_labels = ["Predicted Civil", "Predicted Military"],
-    bin_size = 0.05,
-    colors = ["#4280fb", "#fb4242"],
-    show_rug = False,
-    show_hist = False
-).show()
-
-
-from scipy.optimize import curve_fit
-def func(x, a, b, c):
-    return a * np.exp(-((x - b)/c)**2/2)
-xdata = np.linspace(0, 4, 500)
-y = func(xdata, 2.5, 1.3, 0.5)
-ydata = y + 0.2 * np.random.normal(size=len(xdata))
-popt, pcov = curve_fit(func, xdata, ydata)
-
-yplot = func(xdata, popt[0], popt[1], popt[2])
-
-fig = px.line(
-    x = xdata,
-    y = ydata
-).add_scatter(
-    x = xdata,
-    y = yplot,
-    fill = "tozeroy"
+    hist_data = [prob_distr_TN, 
+                 prob_distr_TP,
+                 prob_distr_FN, 
+                 prob_distr_FP], 
+    group_labels = ["True Negatives", 
+                    "True Positives", 
+                    "False Negatives",
+                    "False Positives"], 
+    bin_size = 0.0005,
+    curve_type = "normal",
+    histnorm = "probability",
+    colors = ["blue", "red", "green", "black"]
 ).show()
 
 
