@@ -10,6 +10,9 @@ import dash_bootstrap_components as dbc
 from dash.dependencies import Input, Output
 import operator
 import dash_table
+import matplotlib.pyplot as plt
+from sklearn.linear_model import LogisticRegression
+from sklearn.metrics import classification_report, confusion_matrix
 
 from Funcs.ui_explo_data_analysis import tab_explo_data_analysis
 from Funcs.ui_table import tab_table
@@ -362,6 +365,66 @@ def update_table(table_filter_num_var_name,
 ### Logistic Regression
 
 # Model:
+
+df = df_airplanes.copy().sort_values(["speed_kmh"])
+df["is_military"] = np.where(df["main_operator"] == "Military", 1, 0)
+
+x = df["speed_kmh"].values.reshape(-1, 1)
+y = df["is_military"].values
+
+model = LogisticRegression(
+    penalty = "l2",
+    tol = 1E-4,
+    C = 1,
+    fit_intercept = True,
+    random_state = 0,
+    solver = "liblinear"
+).fit(x, y)
+
+b0 = model.intercept_[0]
+b1 = model.coef_[0][0]
+
+# Plot fitted model:
+df_funcs = pd.DataFrame({"speed": [i for i in range(3000)]})
+df_funcs["f"] = b0 + b1*df_funcs["speed"]
+df_funcs["p"] = 1/(1 + np.exp(-df_funcs["f"]))
+fig = px.scatter(
+    data_frame = df_funcs,
+    x = "speed",
+    y = "f"
+).add_scatter(
+    x = df_funcs["speed"],
+    y = df_funcs["p"],
+    mode = "lines"
+).add_scatter(
+    x = df["speed_kmh"],
+    y = df["is_military"],
+    mode = "markers"
+).show()
+
+model.predict_proba(x)
+model.predict(x)
+model.score(x, y)
+
+cm = pd.DataFrame(
+    data = confusion_matrix(y_true = y,
+                            y_pred = model.predict(x)),
+    index = ["Civil", "Military"],
+    columns = ["Civil", "Military"]                  
+)
+
+# Plot of confusion matrix:
+fig = px.imshow(
+    img = cm,
+    labels = {
+        "x": "Predicted",
+        "y": "Actual",
+        "color": "Frequency"
+    }
+).show()
+
+
+
 
 
 
