@@ -12,7 +12,7 @@ import operator
 import dash_table
 import matplotlib.pyplot as plt
 from sklearn.linear_model import LogisticRegression
-from sklearn.metrics import classification_report, confusion_matrix
+from sklearn.metrics import classification_report, confusion_matrix, roc_curve
 
 from Funcs.ui_explo_data_analysis import tab_explo_data_analysis
 from Funcs.ui_table import tab_table
@@ -381,39 +381,33 @@ model = LogisticRegression(
     solver = "liblinear"
 ).fit(x, y)
 
-b0 = model.intercept_[0]
-b1 = model.coef_[0][0]
+b0 = model.intercept_[0].round(3)
+b1 = model.coef_[0][0].round(3)
 
 # Plot fitted model:
-df_funcs = pd.DataFrame({"speed": [i for i in range(3000)]})
+df_funcs = pd.DataFrame({"speed": [i for i in range(min(x[:, 0]), max(x[:, 0]), 1)]})
 df_funcs["f"] = b0 + b1*df_funcs["speed"]
 df_funcs["p"] = 1/(1 + np.exp(-df_funcs["f"]))
-fig = px.scatter(
-    data_frame = df_funcs,
-    x = "speed",
-    y = "f"
-).add_scatter(
+fig = px.line(
     x = df_funcs["speed"],
-    y = df_funcs["p"],
-    mode = "lines"
+    y = df_funcs["p"]
 ).add_scatter(
     x = df["speed_kmh"],
     y = df["is_military"],
     mode = "markers"
 ).show()
 
-model.predict_proba(x)
-model.predict(x)
-model.score(x, y)
+print("Accuracy: " + str(model.score(x, y).round(2)))
 
+# Confusion matrix:
 cm = pd.DataFrame(
     data = confusion_matrix(y_true = y,
                             y_pred = model.predict(x)),
     index = ["Civil", "Military"],
     columns = ["Civil", "Military"]                  
 )
-
-# Plot of confusion matrix:
+print("Confusion matrix: ")
+print(cm)
 fig = px.imshow(
     img = cm,
     labels = {
@@ -422,6 +416,46 @@ fig = px.imshow(
         "color": "Frequency"
     }
 ).show()
+
+# Report:
+print(classification_report(y_true = y,
+                            y_pred = model.predict(x),
+                            output_dict = False))
+
+# ROC curve:
+y_prob = model.predict_proba(x)[:, 1]
+fpr, tpr, thresholds = roc_curve(y, y_prob)
+AUC = auc(fpr, tpr)
+df_roc = pd.DataFrame({"fpr": fpr,
+                       "tpr": tpr,
+                       "thresholds": thresholds.round(3)})
+
+fig = px.area(
+    data_frame = df_roc,
+    x = "fpr", 
+    y = "tpr",
+    hover_name = "thresholds"
+    # title = f"ROC Curve (AUC={AUC:.4f})",
+    # labels = {
+    #     "x": "False Positive Rate",
+    #     "y": "True Positive Rate"
+    # }
+).show()
+    .update_traces(
+    hovertemplate = "Thresholds = %{thresholds}"
+).show()
+
+
+
+# .add_shape(
+#     type = "line", 
+#     line = {"dash": "dash"},
+#     x0 = 0,
+#     x1 = 1,
+#     y0 = 0,
+#     y1 = 1
+# )
+
 
 
 
