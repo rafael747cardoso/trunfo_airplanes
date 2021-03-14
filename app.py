@@ -12,7 +12,8 @@ import operator
 import dash_table
 import matplotlib.pyplot as plt
 from sklearn.linear_model import LogisticRegression
-from sklearn.metrics import classification_report, confusion_matrix, roc_curve
+from sklearn.metrics import classification_report, confusion_matrix, roc_curve, roc_auc_score
+from scipy.optimize import curve_fit
 
 from Funcs.ui_explo_data_analysis import tab_explo_data_analysis
 from Funcs.ui_table import tab_table
@@ -423,9 +424,12 @@ print(classification_report(y_true = y,
                             output_dict = False))
 
 # ROC curve:
+
+
 y_prob = model.predict_proba(x)[:, 1]
 fpr, tpr, thresholds = roc_curve(y, y_prob)
-AUC = auc(fpr, tpr)
+auc = roc_auc_score(y_true = y,
+                    y_score = y_prob)
 df_roc = pd.DataFrame({"fpr": fpr.round(3),
                        "tpr": tpr.round(3),
                        "thresholds": thresholds.round(3)})
@@ -435,7 +439,7 @@ fig = px.area(
     x = "fpr", 
     y = "tpr",
     hover_data = ["thresholds"],
-    title = f"ROC Curve (AUC={AUC:.3f})",
+    title = f"ROC Curve (AUC={auc:.3f})",
     labels = {
         "fpr": "False Positive Rate",
         "tpr": "True Positive Rate",
@@ -451,6 +455,46 @@ fig = px.area(
 ).show()
 
 # Plot of probability distribution of the populations (0 and 1):
+
+fig = px.histogram(
+    x = model.predict_proba(x)[:, 1][np.where(model.predict(x) == 0)],
+    nbins = 20
+).show()
+
+fig = px.histogram(
+    x = model.predict_proba(x)[:, 1][np.where(model.predict(x) == 1)],
+    nbins = 20
+).show()
+
+fig = ff.create_distplot(
+    hist_data = [model.predict_proba(x)[:, 1][np.where(model.predict(x) == 0)],
+                 model.predict_proba(x)[:, 1][np.where(model.predict(x) == 1)]],
+    group_labels = ["Predicted Civil", "Predicted Military"],
+    bin_size = 0.05,
+    colors = ["#4280fb", "#fb4242"],
+    show_rug = False,
+    show_hist = False
+).show()
+
+
+from scipy.optimize import curve_fit
+def func(x, a, b, c):
+    return a * np.exp(-((x - b)/c)**2/2)
+xdata = np.linspace(0, 4, 500)
+y = func(xdata, 2.5, 1.3, 0.5)
+ydata = y + 0.2 * np.random.normal(size=len(xdata))
+popt, pcov = curve_fit(func, xdata, ydata)
+
+yplot = func(xdata, popt[0], popt[1], popt[2])
+
+fig = px.line(
+    x = xdata,
+    y = ydata
+).add_scatter(
+    x = xdata,
+    y = yplot,
+    fill = "tozeroy"
+).show()
 
 
 
