@@ -3,6 +3,7 @@ import numpy as np
 import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
+import plotly.figure_factory as ff
 import dash
 import dash_core_components as dcc
 import dash_html_components as html
@@ -13,7 +14,8 @@ import dash_table
 import matplotlib.pyplot as plt
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import classification_report, confusion_matrix, roc_curve, roc_auc_score
-from scipy.optimize import curve_fit
+from sklearn.model_selection import train_test_split
+
 
 from Funcs.ui_explo_data_analysis import tab_explo_data_analysis
 from Funcs.ui_table import tab_table
@@ -363,16 +365,45 @@ def update_table(table_filter_num_var_name,
 
 #################### ML Models
 
-### Logistic Regression
+###### Logistic Regression
+
+# Feature selection:
+df = df_airplanes.copy()[["main_operator",
+                          "thrust_kN",
+                          "max_takeoff_mass_kg",
+                          "speed_kmh",
+                          "range_km",
+                          "max_altitude_m",
+                          "length_m",
+                          "height_m",
+                          "wing_span_m",
+                          "engine_mount",
+                          "engine_type",
+                          "wing_config"]]
+df["is_military"] = np.where(df["main_operator"] == "Military", 1, 0)
+df["engine_mount"].loc[np.where(df["engine_mount"] == "Wings and Tail")] = "WingsTail"
+engine_mounts = pd.get_dummies(data = df["engine_mount"],
+                               prefix = "engine_mount")
+engine_types = pd.get_dummies(data = df["engine_type"],
+                              prefix = "engine_type")
+wing_configs = pd.get_dummies(data = df["wing_config"],
+                              prefix = "wing_config")
+df = df.join([engine_mounts, engine_types, wing_configs])
+df.drop(["main_operator",
+         "engine_mount",
+         "engine_type",
+         "wing_config"],
+        axis = 1,
+        inplace = True)
+predictors = list(df.columns)
 
 # Model:
-
-df = df_airplanes.copy().sort_values(["speed_kmh"])
-df["is_military"] = np.where(df["main_operator"] == "Military", 1, 0)
-
-x = df["speed_kmh"].values.reshape(-1, 1)
+x = df[predictors].values.reshape(-1, len(predictors))
 y = df["is_military"].values
-
+x_train, x_test, y_train, y_test = train_test_split(x, 
+                                                    y, 
+                                                    test_size = 0.35, 
+                                                    random_state = 42)
 model = LogisticRegression(
     penalty = "l2",
     tol = 1E-4,
@@ -380,30 +411,15 @@ model = LogisticRegression(
     fit_intercept = True,
     random_state = 0,
     solver = "liblinear"
-).fit(x, y)
+).fit(x_train, y_train)
 
-b0 = model.intercept_[0].round(3)
-b1 = model.coef_[0][0].round(3)
 
-# Plot fitted model:
-df_funcs = pd.DataFrame({"speed": [i for i in range(min(x[:, 0]), max(x[:, 0]), 1)]})
-df_funcs["f"] = b0 + b1*df_funcs["speed"]
-df_funcs["p"] = 1/(1 + np.exp(-df_funcs["f"]))
-fig = px.line(
-    x = df_funcs["speed"],
-    y = df_funcs["p"]
-).add_scatter(
-    x = df["max_takeoff_mass_kg"],
-    y = df["is_military"],
-    mode = "markers"
-).show()
-
-print("Accuracy: " + str(model.score(x, y).round(2)))
+### Evaluation
 
 # Confusion matrix:
 cm = pd.DataFrame(
-    data = confusion_matrix(y_true = y,
-                            y_pred = model.predict(x)),
+    data = confusion_matrix(y_true = y_test,
+                            y_pred = model.predict(x_test)),
     index = ["Civil", "Military"],
     columns = ["Civil", "Military"]                  
 )
@@ -419,20 +435,15 @@ fig = px.imshow(
     }
 ).show()
 
-# Report:
-print(classification_report(y_true = y,
-                            y_pred = model.predict(x),
-                            output_dict = False))
-
 # ROC curve:
-y_prob = model.predict_proba(x)[:, 1]
-fpr, tpr, thresholds = roc_curve(y, y_prob)
-auc = roc_auc_score(y_true = y,
+y_prob = model.predict_proba(x_test)[:, 1]
+fpr, tpr, thresholds = roc_curve(y_true = y_test, 
+                                 y_score = y_prob)
+auc = roc_auc_score(y_true = y_test,
                     y_score = y_prob)
 df_roc = pd.DataFrame({"fpr": fpr.round(3),
                        "tpr": tpr.round(3),
                        "thresholds": thresholds.round(3)})
-
 fig = px.area(
     data_frame = df_roc,
     x = "fpr", 
@@ -455,14 +466,16 @@ fig = px.area(
 
 # Plot of probability distributions of the populations:
 threshold = 0.5
-prob_distr_TN = model.predict_proba(x)[:, 1][np.where(y == 0)]
-prob_distr_TN = prob_distr_TN[prob_distr_TN < threshold]/sum(model.predict_proba(x)[:, 1])
-prob_distr_TP = model.predict_proba(x)[:, 1][np.where(y == 1)]
-prob_distr_TP = prob_distr_TP[prob_distr_TP >= threshold]/sum(model.predict_proba(x)[:, 1])
-prob_distr_FN = model.predict_proba(x)[:, 1][np.where(y == 1)]
-prob_distr_FN = prob_distr_FN[prob_distr_FN < threshold]/sum(model.predict_proba(x)[:, 1])
-prob_distr_FP = model.predict_proba(x)[:, 1][np.where(y == 0)]
-prob_distr_FP = prob_distr_FP[prob_distr_FP >= threshold]/sum(model.predict_proba(x)[:, 1])
+prob_distr_TN = model.predict_proba(x_test)[:, 1][np.where(y_test == 0)]
+prob_distr_TN = prob_distr_TN[prob_distr_TN < threshold]/sum(model.predict_proba(x_test)[:, 1])
+prob_distr_TP = model.predict_proba(x_test)[:, 1][np.where(y_test == 1)]
+prob_distr_TP = prob_distr_TP[prob_distr_TP >= threshold]/sum(model.predict_proba(x_test)[:, 1])
+prob_distr_FN = model.predict_proba(x_test)[:, 1][np.where(y_test == 1)]
+prob_distr_FN = prob_distr_FN[prob_distr_FN < threshold]/sum(model.predict_proba(x_test)[:, 1])
+prob_distr_FP = model.predict_proba(x_test)[:, 1][np.where(y_test == 0)]
+prob_distr_FP = prob_distr_FP[prob_distr_FP >= threshold]/sum(model.predict_proba(x_test)[:, 1])
+
+hist_vars = 
 
 fig = ff.create_distplot(
     hist_data = [prob_distr_TN, 
@@ -476,9 +489,32 @@ fig = ff.create_distplot(
     bin_size = 0.0005,
     curve_type = "normal",
     histnorm = "probability",
-    colors = ["blue", "red", "green", "black"]
+    colors = ["#c70039", "#2a7b9b", "#ff8d1a", "#57c785"]
 ).show()
 
+# Plot the projection of the fitted curve over predictors:
+b0 = model.intercept_[0]
+bs = [model.coef_[0][i] for i in range(len(predictors))]
+df_fit = pd.DataFrame()
+for i in range(len(predictors)):
+    df_fit[predictors[i]] = np.linspace(min(x_test[:, i]), max(x_test[:, i]), x_test.shape[0])
+df_fit["f"] = b0 + sum([bs[i]*df_fit[predictors[i]] for i in range(len(predictors))])
+df_fit["p"] = 1/(1 + np.exp(-(df_fit["f"])))
+p_i = 0
+fig = px.line(
+    x = df_fit[predictors[p_i]],
+    y = df_fit["p"]
+).add_scatter(
+    x = df[predictors[p_i]],
+    y = df["is_military"],
+    mode = "markers"
+).show()
+
+# Report:
+print("Accuracy: " + str(model.score(x_test, y_test).round(2)))
+print(classification_report(y_true = y_test,
+                            y_pred = model.predict(x_test),
+                            output_dict = False))
 
 
 
@@ -487,34 +523,11 @@ fig = ff.create_distplot(
 
 
 
-def update_plot_logit_1():
-    plot = px.histogram(
-        data_frame = df_airplanes,
-        x = "speed_kmh",
-        nbins = 100,
-        template = "plotly_dark"
-    )
-    return(plot)
-plot_logit_1 = update_plot_logit_1()
-
-def update_plot_logit_2():
-    plot = px.histogram(
-        data_frame = df_airplanes,
-        x = "height_m",
-        nbins = 100,
-        template = "plotly_dark"
-    )
-    return(plot)
-plot_logit_2 = update_plot_logit_2()
 
 
 
 
-
-
-
-
-### k-Means Clustering
+###### k-Means Clustering
 
 
 
