@@ -413,56 +413,26 @@ model = LogisticRegression(
     solver = "liblinear"
 ).fit(x_train, y_train)
 
-
 ### Evaluation
 
-# Confusion matrix:
-cm = pd.DataFrame(
-    data = confusion_matrix(y_true = y_test,
-                            y_pred = model.predict(x_test)),
-    index = ["Civil", "Military"],
-    columns = ["Civil", "Military"]                  
+# Plot the projection of the fitted curve over the predictors:
+b0 = model.intercept_[0]
+bs = [model.coef_[0][i] for i in range(len(predictors))]
+df_fit = pd.DataFrame()
+for i in range(len(predictors)):
+    df_fit[predictors[i]] = np.linspace(min(x_test[:, i]), max(x_test[:, i]), x_test.shape[0])
+df_fit["f"] = b0 + sum([bs[i]*df_fit[predictors[i]] for i in range(len(predictors))])
+df_fit["p"] = 1/(1 + np.exp(-(df_fit["f"])))
+p_i = 0
+plot_logit_fit_proj = px.line(
+    x = df_fit[predictors[p_i]],
+    y = df_fit["p"],
+    template = "plotly_dark"
+).add_scatter(
+    x = df[predictors[p_i]],
+    y = df["is_military"],
+    mode = "markers"
 )
-print("Confusion matrix: ")
-print(cm)
-
-fig = px.imshow(
-    img = cm,
-    labels = {
-        "x": "Predicted",
-        "y": "Actual",
-        "color": "Frequency"
-    }
-).show()
-
-# ROC curve:
-y_prob = model.predict_proba(x_test)[:, 1]
-fpr, tpr, thresholds = roc_curve(y_true = y_test, 
-                                 y_score = y_prob)
-auc = roc_auc_score(y_true = y_test,
-                    y_score = y_prob)
-df_roc = pd.DataFrame({"fpr": fpr.round(3),
-                       "tpr": tpr.round(3),
-                       "thresholds": thresholds.round(3)})
-fig = px.area(
-    data_frame = df_roc,
-    x = "fpr", 
-    y = "tpr",
-    hover_data = ["thresholds"],
-    title = f"ROC Curve (AUC={auc:.3f})",
-    labels = {
-        "fpr": "False Positive Rate",
-        "tpr": "True Positive Rate",
-        "thresholds": "Threshold"
-    }
-).add_shape(
-    type = "line", 
-    line = {"dash": "dash"},
-    x0 = 0,
-    x1 = 1,
-    y0 = 0,
-    y1 = 1
-).show()
 
 # Plot of probability distributions of the populations:
 threshold = 0.5
@@ -474,41 +444,73 @@ prob_distr_FN = model.predict_proba(x_test)[:, 1][np.where(y_test == 1)]
 prob_distr_FN = prob_distr_FN[prob_distr_FN < threshold]/sum(model.predict_proba(x_test)[:, 1])
 prob_distr_FP = model.predict_proba(x_test)[:, 1][np.where(y_test == 0)]
 prob_distr_FP = prob_distr_FP[prob_distr_FP >= threshold]/sum(model.predict_proba(x_test)[:, 1])
-
-hist_vars = 
-
-fig = ff.create_distplot(
-    hist_data = [prob_distr_TN, 
-                 prob_distr_TP,
-                 prob_distr_FN, 
-                 prob_distr_FP], 
-    group_labels = ["True Negatives", 
-                    "True Positives", 
-                    "False Negatives",
-                    "False Positives"], 
+hist_vars = [prob_distr_TN,
+             prob_distr_TP,
+             prob_distr_FN,
+             prob_distr_FP]
+hist_data = [i for i in hist_vars if len(i) > 0]
+hist_labels = ["True Negatives", 
+               "True Positives", 
+               "False Negatives",
+               "False Positives"]
+group_labels = [hist_labels[i] for i in range(len(hist_labels)) if len(hist_vars[i]) > 0]
+plot_logit_pdf_pop = ff.create_distplot(
+    hist_data = hist_data, 
+    group_labels = group_labels, 
     bin_size = 0.0005,
     curve_type = "normal",
     histnorm = "probability",
     colors = ["#c70039", "#2a7b9b", "#ff8d1a", "#57c785"]
-).show()
+).update_layout(
+    template = "plotly_dark"
+)
 
-# Plot the projection of the fitted curve over predictors:
-b0 = model.intercept_[0]
-bs = [model.coef_[0][i] for i in range(len(predictors))]
-df_fit = pd.DataFrame()
-for i in range(len(predictors)):
-    df_fit[predictors[i]] = np.linspace(min(x_test[:, i]), max(x_test[:, i]), x_test.shape[0])
-df_fit["f"] = b0 + sum([bs[i]*df_fit[predictors[i]] for i in range(len(predictors))])
-df_fit["p"] = 1/(1 + np.exp(-(df_fit["f"])))
-p_i = 0
-fig = px.line(
-    x = df_fit[predictors[p_i]],
-    y = df_fit["p"]
-).add_scatter(
-    x = df[predictors[p_i]],
-    y = df["is_military"],
-    mode = "markers"
-).show()
+# Confusion matrix:
+cm = pd.DataFrame(
+    data = confusion_matrix(y_true = y_test,
+                            y_pred = model.predict(x_test)),
+    index = ["Civil", "Military"],
+    columns = ["Civil", "Military"]                  
+)
+plot_logit_confusion = px.imshow(
+    img = cm,
+    labels = {
+        "x": "Predicted",
+        "y": "Actual",
+        "color": "Frequency"
+    },
+    template = "plotly_dark"
+)
+
+# ROC curve:
+y_prob = model.predict_proba(x_test)[:, 1]
+fpr, tpr, thresholds = roc_curve(y_true = y_test, 
+                                 y_score = y_prob)
+auc = roc_auc_score(y_true = y_test,
+                    y_score = y_prob)
+df_roc = pd.DataFrame({"fpr": fpr.round(3),
+                       "tpr": tpr.round(3),
+                       "thresholds": thresholds.round(3)})
+plot_logit_roc = px.area(
+    data_frame = df_roc,
+    x = "fpr", 
+    y = "tpr",
+    hover_data = ["thresholds"],
+    title = f"ROC Curve (AUC={auc:.3f})",
+    labels = {
+        "fpr": "False Positive Rate",
+        "tpr": "True Positive Rate",
+        "thresholds": "Threshold"
+    },
+    template = "plotly_dark"
+).add_shape(
+    type = "line", 
+    line = {"dash": "dash"},
+    x0 = 0,
+    x1 = 1,
+    y0 = 0,
+    y1 = 1
+)
 
 # Report:
 print("Accuracy: " + str(model.score(x_test, y_test).round(2)))
@@ -570,8 +572,10 @@ app.layout = html.Div(
                 ),
                 dbc.Tab(
                     label = "Machine Learning Models",
-                    children = tab_ml_models(plot_logit_1 = plot_logit_1,
-                                             plot_logit_2 = plot_logit_2)
+                    children = tab_ml_models(plot_logit_fit_proj = plot_logit_fit_proj,
+                                             plot_logit_pdf_pop = plot_logit_pdf_pop,
+                                             plot_logit_confusion = plot_logit_confusion,
+                                             plot_logit_roc = plot_logit_roc)
                 )
             ]
         )

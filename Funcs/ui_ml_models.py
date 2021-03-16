@@ -3,12 +3,17 @@ import dash_core_components as dcc
 import dash_html_components as html
 import dash_bootstrap_components as dbc
 
-def tab_ml_models(plot_logit_1,
-                  plot_logit_2
+def tab_ml_models(plot_logit_fit_proj,
+                  plot_logit_pdf_pop,
+                  plot_logit_confusion,
+                  plot_logit_roc
                   ):
     """
     Makes the UI of the ML Models tab.
-    :param plot_logit_1:
+    :param plot_logit_fit_proj:
+    :param plot_logit_pdf_pop:
+    :param plot_logit_confusion:
+    :param plot_logit_roc:
     :return: 
     """
 
@@ -49,7 +54,7 @@ def tab_ml_models(plot_logit_1,
                                                                     dbc.Col(
                                                                         [
                                                                             dcc.Graph(
-                                                                                figure = plot_logit_1
+                                                                                figure = plot_logit_fit_proj
                                                                             )
                                                                         ],
                                                                         width = 12
@@ -68,7 +73,7 @@ def tab_ml_models(plot_logit_1,
                                                                     dbc.Col(
                                                                         [
                                                                             dcc.Graph(
-                                                                                figure = plot_logit_2
+                                                                                figure = plot_logit_pdf_pop
                                                                             )
                                                                         ],
                                                                         width = 12
@@ -83,7 +88,50 @@ def tab_ml_models(plot_logit_1,
                                                 ]
                                             ),
                                             html.Br(),
-
+                                            dbc.Row(
+                                                [
+                                                    dbc.Col(
+                                                        [
+                                                            dbc.Card(
+                                                                [
+                                                                    dbc.Col(
+                                                                        [
+                                                                            dcc.Graph(
+                                                                                figure = plot_logit_confusion
+                                                                            )
+                                                                        ],
+                                                                        width = 12
+                                                                    )
+                                                                ],
+                                                                className = "plot-card",
+                                                                inverse = True
+                                                            )
+                                                        ],
+                                                        width = 6
+                                                    ),
+                                                    dbc.Col(
+                                                        [
+                                                            dbc.Card(
+                                                                [
+                                                                    dbc.Col(
+                                                                        [
+                                                                            dcc.Graph(
+                                                                                figure = plot_logit_roc
+                                                                            )
+                                                                        ],
+                                                                        width = 12
+                                                                    )
+                                                                ],
+                                                                className = "plot-card",
+                                                                inverse = True
+                                                            )
+                                                        ],
+                                                        width = 6
+                                                    )
+                                                ]
+                                            ),
+                                            html.Br(),
+                                            
                                             # Model Summary:
                                             dbc.Row(
                                                 [
