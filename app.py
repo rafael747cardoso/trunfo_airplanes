@@ -420,38 +420,51 @@ logit_predictors_poss = [
     {"label": "Wing Config Middle", "value": "wing_config_Middle"}
 ]
 
-# Model:
-x = df[predictors].values.reshape(-1, len(predictors))
-y = df["is_military"].values
-x_train, x_test, y_train, y_test = train_test_split(x, 
-                                                    y, 
-                                                    test_size = 0.35, 
-                                                    random_state = 42)
-model = LogisticRegression(
-    penalty = "l2",
-    tol = 1E-4,
-    C = 1,
-    fit_intercept = True,
-    random_state = 0,
-    solver = "liblinear"
-).fit(x_train, y_train)
+# Dynamic test size:
+@app.callback(
+    Output(component_id = "test_prop_logit_chosen", component_property = "children"),
+    [Input(component_id = "test_prop_logit", component_property = "value")]
+)
+def update_chosen_test_prop_logit(test_prop_logit):
+    return(html.H5("Chosen size = " + str(int(test_prop_logit*100)) + "%",
+                   className = "title-slider"))
 
-### Evaluation
-
-# Plot the projection of the fitted curve over the predictors:
+# Model and evaluation:
 @app.callback(
     Output(component_id = "plot_logit_fit_proj", component_property = "figure"),
-    [Input(component_id = "predictor_proj_logit", component_property = "value")]
+    Output(component_id = "plot_logit_pdf_pop", component_property = "figure"),
+    Output(component_id = "plot_logit_confusion", component_property = "figure"),
+    Output(component_id = "plot_logit_roc", component_property = "figure"),
+    Output(component_id = "plot_logit_report", component_property = "figure"),
+    [Input(component_id = "test_prop_logit", component_property = "value"),
+     Input(component_id = "predictor_proj_logit", component_property = "value")]
 )
-def update_plot_logit_fit_proj(predictor_proj_logit):
-    b0 = model.intercept_[0]
-    bs = [model.coef_[0][i] for i in range(len(predictors))]
+def update_model_logit(test_prop_logit,
+                       predictor_proj_logit):
+    x = df[predictors].values.reshape(-1, len(predictors))
+    y = df["is_military"].values
+    x_train, x_test, y_train, y_test = train_test_split(x, 
+                                                        y, 
+                                                        test_size = test_prop_logit, 
+                                                        random_state = 42)
+    model_logit = LogisticRegression(
+        penalty = "l2",
+        tol = 1E-4,
+        C = 1,
+        fit_intercept = True,
+        random_state = 0,
+        solver = "liblinear"
+    ).fit(x_train, y_train)
+    model_xytest_logit = [model_logit, x_test, y_test]
+    
+    # Plot the projection of the fitted curve over the predictors:
+    b0 = model_logit.intercept_[0]
+    bs = [model_logit.coef_[0][i] for i in range(len(predictors))]
     df_fit = pd.DataFrame()
     for i in range(len(predictors)):
         df_fit[predictors[i]] = np.linspace(min(x_test[:, i]), max(x_test[:, i]), x_test.shape[0])
-    df_fit["f"] = b0 + sum([bs[i]*df_fit[predictors[i]] for i in range(len(predictors))])
-    df_fit["p"] = 1/(1 + np.exp(-(df_fit["f"])))
-    
+    df_fit["f"] = b0 + sum([bs[i] * df_fit[predictors[i]] for i in range(len(predictors))])
+    df_fit["p"] = 1 / (1 + np.exp(-(df_fit["f"])))
     plot_logit_fit_proj = px.scatter(
         x = df[predictor_proj_logit],
         y = df["is_military"],
@@ -473,122 +486,117 @@ def update_plot_logit_fit_proj(predictor_proj_logit):
         legend_title_text = "",
         height = 460
     )
-    return(plot_logit_fit_proj)
+    
+    # Plot of probability distributions of the populations:
+    threshold = 0.5
+    prob_distr_TN = model_logit.predict_proba(x_test)[:, 1][np.where(y_test == 0)]
+    prob_distr_TN = prob_distr_TN[prob_distr_TN < threshold]/sum(model_logit.predict_proba(x_test)[:, 1])
+    prob_distr_TP = model_logit.predict_proba(x_test)[:, 1][np.where(y_test == 1)]
+    prob_distr_TP = prob_distr_TP[prob_distr_TP >= threshold]/sum(model_logit.predict_proba(x_test)[:, 1])
+    prob_distr_FN = model_logit.predict_proba(x_test)[:, 1][np.where(y_test == 1)]
+    prob_distr_FN = prob_distr_FN[prob_distr_FN < threshold]/sum(model_logit.predict_proba(x_test)[:, 1])
+    prob_distr_FP = model_logit.predict_proba(x_test)[:, 1][np.where(y_test == 0)]
+    prob_distr_FP = prob_distr_FP[prob_distr_FP >= threshold]/sum(model_logit.predict_proba(x_test)[:, 1])
+    hist_vars = [prob_distr_TN,
+                 prob_distr_TP,
+                 prob_distr_FN,
+                 prob_distr_FP]
+    hist_data = [i for i in hist_vars if len(i) > 0]
+    hist_labels = ["True Negatives", 
+                   "True Positives", 
+                   "False Negatives",
+                   "False Positives"]
+    group_labels = [hist_labels[i] for i in range(len(hist_labels)) if len(hist_vars[i]) > 0]
+    plot_logit_pdf_pop = ff.create_distplot(
+        hist_data = hist_data, 
+        group_labels = group_labels, 
+        bin_size = 0.0025,
+        curve_type = "normal",
+        histnorm = "probability",
+        colors = ["#c70039", "#2a7b9b", "#ff8d1a", "#57c785"]
+    ).update_layout(
+        template = "plotly_dark",
+        legend = {"orientation": "h",
+                  "yanchor": "bottom",
+                  "y": 1.02,
+                  "xanchor": "right",
+                  "x": 1},
+        legend_title_text = "",
+        height = 500
+    )
+    
+    # Confusion matrix:
+    cm = pd.DataFrame(
+        data = confusion_matrix(y_true = y_test,
+                                y_pred = model_logit.predict(x_test)),
+        index = ["Civil", "Military"],
+        columns = ["Civil", "Military"]                  
+    )
+    plot_logit_confusion = px.imshow(
+        img = cm,
+        labels = {
+            "x": "Predicted",
+            "y": "Actual",
+            "color": "Frequency"
+        },
+        template = "plotly_dark"
+    ).update_layout(
+        height = 500
+    )
+    
+    # ROC Curve:
+    y_prob = model_logit.predict_proba(x_test)[:, 1]
+    fpr, tpr, thresholds = roc_curve(y_true = y_test, 
+                                     y_score = y_prob)
+    auc = roc_auc_score(y_true = y_test,
+                        y_score = y_prob)
+    df_roc = pd.DataFrame({"fpr": fpr.round(3),
+                           "tpr": tpr.round(3),
+                           "thresholds": thresholds.round(3)})
+    plot_logit_roc = px.area(
+        data_frame = df_roc,
+        x = "fpr", 
+        y = "tpr",
+        hover_data = ["thresholds"],
+        title = f"AUC = {auc:.3f}",
+        labels = {
+            "fpr": "False Positive Rate",
+            "tpr": "True Positive Rate",
+            "thresholds": "Threshold"
+        },
+        template = "plotly_dark"
+    ).add_shape(
+        type = "line", 
+        line = {"dash": "dash"},
+        x0 = 0,
+        x1 = 1,
+        y0 = 0,
+        y1 = 1
+    ).update_layout(
+        height = 500
+    )
+    
+    # Report:
+    report_logit = classification_report(y_true = y_test,
+                                         y_pred = model_logit.predict(x_test),
+                                         labels = [0, 1],
+                                         target_names = ["Civil", "Military"],
+                                         output_dict = True)
+    df_rep = pd.DataFrame(report_logit).round(3)
+    plot_logit_report = ff.create_annotated_heatmap(
+        z = df_rep.values,
+        x = list(df_rep.columns),
+        y = list(df_rep.index)
+    ).update_layout(
+        height = 500,
+        template = "plotly_dark"
+    )
 
-# Plot of probability distributions of the populations:
-threshold = 0.5
-prob_distr_TN = model.predict_proba(x_test)[:, 1][np.where(y_test == 0)]
-prob_distr_TN = prob_distr_TN[prob_distr_TN < threshold]/sum(model.predict_proba(x_test)[:, 1])
-prob_distr_TP = model.predict_proba(x_test)[:, 1][np.where(y_test == 1)]
-prob_distr_TP = prob_distr_TP[prob_distr_TP >= threshold]/sum(model.predict_proba(x_test)[:, 1])
-prob_distr_FN = model.predict_proba(x_test)[:, 1][np.where(y_test == 1)]
-prob_distr_FN = prob_distr_FN[prob_distr_FN < threshold]/sum(model.predict_proba(x_test)[:, 1])
-prob_distr_FP = model.predict_proba(x_test)[:, 1][np.where(y_test == 0)]
-prob_distr_FP = prob_distr_FP[prob_distr_FP >= threshold]/sum(model.predict_proba(x_test)[:, 1])
-hist_vars = [prob_distr_TN,
-             prob_distr_TP,
-             prob_distr_FN,
-             prob_distr_FP]
-hist_data = [i for i in hist_vars if len(i) > 0]
-hist_labels = ["True Negatives", 
-               "True Positives", 
-               "False Negatives",
-               "False Positives"]
-group_labels = [hist_labels[i] for i in range(len(hist_labels)) if len(hist_vars[i]) > 0]
-plot_logit_pdf_pop = ff.create_distplot(
-    hist_data = hist_data, 
-    group_labels = group_labels, 
-    bin_size = 0.0025,
-    curve_type = "normal",
-    histnorm = "probability",
-    colors = ["#c70039", "#2a7b9b", "#ff8d1a", "#57c785"]
-).update_layout(
-    template = "plotly_dark",
-    legend = {"orientation": "h",
-              "yanchor": "bottom",
-              "y": 1.02,
-              "xanchor": "right",
-              "x": 1},
-    legend_title_text = "",
-    height = 500
-)
-
-# Confusion matrix:
-cm = pd.DataFrame(
-    data = confusion_matrix(y_true = y_test,
-                            y_pred = model.predict(x_test)),
-    index = ["Civil", "Military"],
-    columns = ["Civil", "Military"]                  
-)
-plot_logit_confusion = px.imshow(
-    img = cm,
-    labels = {
-        "x": "Predicted",
-        "y": "Actual",
-        "color": "Frequency"
-    },
-    template = "plotly_dark"
-).update_layout(
-    height = 500
-)
-
-# ROC curve:
-y_prob = model.predict_proba(x_test)[:, 1]
-fpr, tpr, thresholds = roc_curve(y_true = y_test, 
-                                 y_score = y_prob)
-auc = roc_auc_score(y_true = y_test,
-                    y_score = y_prob)
-df_roc = pd.DataFrame({"fpr": fpr.round(3),
-                       "tpr": tpr.round(3),
-                       "thresholds": thresholds.round(3)})
-plot_logit_roc = px.area(
-    data_frame = df_roc,
-    x = "fpr", 
-    y = "tpr",
-    hover_data = ["thresholds"],
-    title = f"AUC = {auc:.3f}",
-    labels = {
-        "fpr": "False Positive Rate",
-        "tpr": "True Positive Rate",
-        "thresholds": "Threshold"
-    },
-    template = "plotly_dark"
-).add_shape(
-    type = "line", 
-    line = {"dash": "dash"},
-    x0 = 0,
-    x1 = 1,
-    y0 = 0,
-    y1 = 1
-).update_layout(
-    height = 500
-)
-
-# Report:
-report_logit = classification_report(y_true = y_test,
-                                     y_pred = model.predict(x_test),
-                                     labels = [0, 1],
-                                     target_names = ["Civil", "Military"],
-                                     output_dict = True)
-df_rep = pd.DataFrame(report_logit).round(3)
-plot_logit_report = ff.create_annotated_heatmap(
-    z = df_rep.values,
-    x = list(df_rep.columns),
-    y = list(df_rep.index)
-).update_layout(
-    height = 500,
-    template = "plotly_dark"
-)
-
-
-###### k-Means Clustering
-
-
-
-
-
-
-
+    return(plot_logit_fit_proj,
+           plot_logit_pdf_pop,
+           plot_logit_confusion,
+           plot_logit_roc,
+           plot_logit_report)
 
 
 #-----------------------------------------------------------------------------------------------------------------------
@@ -623,12 +631,8 @@ app.layout = html.Div(
                                          filter_operations_poss = filter_operations_poss)
                 ),
                 dbc.Tab(
-                    label = "Machine Learning Models",
-                    children = tab_ml_models(plot_logit_pdf_pop = plot_logit_pdf_pop,
-                                             plot_logit_confusion = plot_logit_confusion,
-                                             plot_logit_roc = plot_logit_roc,
-                                             logit_predictors_poss = logit_predictors_poss,
-                                             plot_logit_report = plot_logit_report)
+                    label = "Machine Learning Model",
+                    children = tab_ml_models(logit_predictors_poss = logit_predictors_poss)
                 )
             ]
         )

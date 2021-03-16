@@ -1,21 +1,13 @@
 
+import numpy as np
 import dash_core_components as dcc
 import dash_html_components as html
 import dash_bootstrap_components as dbc
 
-def tab_ml_models(plot_logit_pdf_pop,
-                  plot_logit_confusion,
-                  plot_logit_roc,
-                  logit_predictors_poss,
-                  plot_logit_report
-                  ):
+def tab_ml_models(logit_predictors_poss):
     """
     Makes the UI of the ML Models tab.
-    :param plot_logit_pdf_pop:
-    :param plot_logit_confusion:
-    :param plot_logit_roc:
     :param logit_predictors_poss:
-    :param plot_logit_report:
     :return: 
     """
 
@@ -38,14 +30,22 @@ def tab_ml_models(plot_logit_pdf_pop,
                                                 dbc.Col(
                                                     [
                                                         html.H3("Civil/Military Classification with Logistic Regression",
-                                                                className = "title-model")
-                                                        # html.Br(),
-                                                        # html.Br(),
-                                                        # dbc.Input(
-                                                        #     id = "test_prop_logit",
-                                                        #     type = "number",
-                                                        #     value = 0.3
-                                                        # )
+                                                                className = "title-model"),
+                                                        html.Br(),
+                                                        html.Br(),
+                                                        html.H4("Proportional size of the test dataset:",
+                                                                className = "title-slider"),
+                                                        html.Br(),
+                                                        dcc.Slider(
+                                                            id = "test_prop_logit",
+                                                            min = 0.1,
+                                                            max = 0.9,
+                                                            step = 0.01,
+                                                            value = 0.3,
+                                                            marks = dict([(i, str(int(i*100))) for i in np.arange(0.1, 1, 0.1)])
+                                                        ),
+                                                        html.Br(),
+                                                        html.Div(id = "test_prop_logit_chosen")
                                                     ],
                                                     width = 12
                                                 )
@@ -94,7 +94,7 @@ def tab_ml_models(plot_logit_pdf_pop,
                                                                         [
                                                                             html.H4("Probability Distributions of the Populations",
                                                                                     className = "table-card"),
-                                                                            dcc.Graph(figure = plot_logit_pdf_pop)
+                                                                            dcc.Graph(id = "plot_logit_pdf_pop")
                                                                         ],
                                                                         width = 12
                                                                     )
@@ -118,7 +118,7 @@ def tab_ml_models(plot_logit_pdf_pop,
                                                                         [
                                                                             html.H4("Confusion Matrix",
                                                                                     className = "table-card"),
-                                                                            dcc.Graph(figure = plot_logit_confusion)
+                                                                            dcc.Graph(id = "plot_logit_confusion")
                                                                         ],
                                                                         width = 12
                                                                     )
@@ -137,7 +137,7 @@ def tab_ml_models(plot_logit_pdf_pop,
                                                                         [
                                                                             html.H4("ROC Curve",
                                                                                     className = "table-card"),
-                                                                            dcc.Graph(figure = plot_logit_roc)
+                                                                            dcc.Graph(id = "plot_logit_roc")
                                                                         ],
                                                                         width = 12
                                                                     )
@@ -163,7 +163,7 @@ def tab_ml_models(plot_logit_pdf_pop,
                                                                         [
                                                                             html.H4("Report",
                                                                                     className = "table-card"),
-                                                                            dcc.Graph(figure = plot_logit_report)
+                                                                            dcc.Graph(id = "plot_logit_report")
                                                                         ],
                                                                         width = 12
                                                                     )
@@ -189,15 +189,7 @@ def tab_ml_models(plot_logit_pdf_pop,
 
                 ]
             ),
-            html.Br(),
-            html.Br(),
-
-            # k-Means Clustering:
-            dbc.Row(
-                [
-                    "k-means"
-                ]
-            )
+            html.Br()
         ]
     )
 
