@@ -39,6 +39,13 @@ def tab_ml_models(plot_logit_pdf_pop,
                                                     [
                                                         html.H3("Civil/Military Classification with Logistic Regression",
                                                                 className = "title-model")
+                                                        # html.Br(),
+                                                        # html.Br(),
+                                                        # dbc.Input(
+                                                        #     id = "test_prop_logit",
+                                                        #     type = "number",
+                                                        #     value = 0.3
+                                                        # )
                                                     ],
                                                     width = 12
                                                 )
