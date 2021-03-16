@@ -644,8 +644,8 @@ app.layout = html.Div(
 #-----------------------------------------------------------------------------------------------------------------------
 ############################################## Run the dashboard #######################################################
 
-run_vers = "dev"
-# run_vers = "production"
+# run_vers = "dev"
+run_vers = "production"
 
 if run_vers == "dev":
     app.run_server(debug = True)
