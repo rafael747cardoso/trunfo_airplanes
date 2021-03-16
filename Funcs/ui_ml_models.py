@@ -3,17 +3,19 @@ import dash_core_components as dcc
 import dash_html_components as html
 import dash_bootstrap_components as dbc
 
-def tab_ml_models(plot_logit_fit_proj,
-                  plot_logit_pdf_pop,
+def tab_ml_models(plot_logit_pdf_pop,
                   plot_logit_confusion,
-                  plot_logit_roc
+                  plot_logit_roc,
+                  logit_predictors_poss,
+                  plot_logit_report
                   ):
     """
     Makes the UI of the ML Models tab.
-    :param plot_logit_fit_proj:
     :param plot_logit_pdf_pop:
     :param plot_logit_confusion:
     :param plot_logit_roc:
+    :param logit_predictors_poss:
+    :param plot_logit_report:
     :return: 
     """
 
@@ -51,16 +53,27 @@ def tab_ml_models(plot_logit_fit_proj,
                                                         [
                                                             dbc.Card(
                                                                 [
+                                                                    
                                                                     dbc.Col(
                                                                         [
-                                                                            dcc.Graph(
-                                                                                figure = plot_logit_fit_proj
-                                                                            )
+                                                                            html.H4("Logit Function Projections",
+                                                                                    className = "table-card"),
+                                                                            dbc.Col(
+                                                                                [
+                                                                                    dbc.Select(
+                                                                                        id = "predictor_proj_logit",
+                                                                                        options = logit_predictors_poss,
+                                                                                        value = logit_predictors_poss[0]["value"]
+                                                                                    )
+                                                                                ],
+                                                                                width = 6
+                                                                            ),
+                                                                            dcc.Graph(id = "plot_logit_fit_proj")
                                                                         ],
                                                                         width = 12
                                                                     )
                                                                 ],
-                                                                className = "plot-card",
+                                                                className = "plot-model-card",
                                                                 inverse = True
                                                             )
                                                         ],
@@ -72,14 +85,14 @@ def tab_ml_models(plot_logit_fit_proj,
                                                                 [
                                                                     dbc.Col(
                                                                         [
-                                                                            dcc.Graph(
-                                                                                figure = plot_logit_pdf_pop
-                                                                            )
+                                                                            html.H4("Probability Distributions of the Populations",
+                                                                                    className = "table-card"),
+                                                                            dcc.Graph(figure = plot_logit_pdf_pop)
                                                                         ],
                                                                         width = 12
                                                                     )
                                                                 ],
-                                                                className = "plot-card",
+                                                                className = "plot-model-card",
                                                                 inverse = True
                                                             )
                                                         ],
@@ -96,14 +109,14 @@ def tab_ml_models(plot_logit_fit_proj,
                                                                 [
                                                                     dbc.Col(
                                                                         [
-                                                                            dcc.Graph(
-                                                                                figure = plot_logit_confusion
-                                                                            )
+                                                                            html.H4("Confusion Matrix",
+                                                                                    className = "table-card"),
+                                                                            dcc.Graph(figure = plot_logit_confusion)
                                                                         ],
                                                                         width = 12
                                                                     )
                                                                 ],
-                                                                className = "plot-card",
+                                                                className = "plot-model-card",
                                                                 inverse = True
                                                             )
                                                         ],
@@ -115,14 +128,14 @@ def tab_ml_models(plot_logit_fit_proj,
                                                                 [
                                                                     dbc.Col(
                                                                         [
-                                                                            dcc.Graph(
-                                                                                figure = plot_logit_roc
-                                                                            )
+                                                                            html.H4("ROC Curve",
+                                                                                    className = "table-card"),
+                                                                            dcc.Graph(figure = plot_logit_roc)
                                                                         ],
                                                                         width = 12
                                                                     )
                                                                 ],
-                                                                className = "plot-card",
+                                                                className = "plot-model-card",
                                                                 inverse = True
                                                             )
                                                         ],
@@ -141,12 +154,14 @@ def tab_ml_models(plot_logit_fit_proj,
                                                                 [
                                                                     dbc.Col(
                                                                         [
-                                                                            "Model summary"
+                                                                            html.H4("Report",
+                                                                                    className = "table-card"),
+                                                                            dcc.Graph(figure = plot_logit_report)
                                                                         ],
                                                                         width = 12
                                                                     )
                                                                 ],
-                                                                className = "plot-card",
+                                                                className = "plot-model-card",
                                                                 inverse = True
                                                             )
                                                         ],

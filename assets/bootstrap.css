@@ -11508,12 +11508,16 @@ a.text-dark:hover, a.text-dark:focus {
 
 /************************************************** Models */
 
-.title-model {
-    
+.plot-model-card {
+    border-radius: 15px;
+    text-align: center;
+    border: 1px solid gray;
+    padding: 0px
 }
 
-
-
+.dash-graph{
+    padding-bottom: 5px !important;
+}
 
 
 

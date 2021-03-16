@@ -389,13 +389,36 @@ engine_types = pd.get_dummies(data = df["engine_type"],
 wing_configs = pd.get_dummies(data = df["wing_config"],
                               prefix = "wing_config")
 df = df.join([engine_mounts, engine_types, wing_configs])
-df.drop(["main_operator",
-         "engine_mount",
+df.drop(["engine_mount",
          "engine_type",
          "wing_config"],
         axis = 1,
         inplace = True)
 predictors = list(df.columns)
+predictors = [i for i in predictors if i not in ["main_operator", "is_military"]]
+
+logit_predictors_poss = [
+    {"label": "Thrust (kN)", "value": "thrust_kN"},
+    {"label": "Max Takeoff Mass (kg)", "value": "max_takeoff_mass_kg"},
+    {"label": "Speed (km/h)", "value": "speed_kmh"},
+    {"label": "Range (km)", "value": "range_km"},
+    {"label": "Max Altitude (m)", "value": "max_altitude_m"},
+    {"label": "Length (m)", "value": "length_m"},
+    {"label": "Height (m)", "value": "height_m"},
+    {"label": "Wingspan (m)", "value": "wing_span_m"},
+    {"label": "Engine Mount Fuselage", "value": "engine_mount_Fuselage"},
+    {"label": "Engine Mount Nose", "value": "engine_mount_Nose"},
+    {"label": "Engine Mount Tail", "value": "engine_mount_Tail"},
+    {"label": "Engine Mount Wings", "value": "engine_mount_Wings"},
+    {"label": "Engine Mount Wings and Tail", "value": "engine_mount_WingsTail"},
+    {"label": "Engine Type Jet", "value": "engine_type_Jet"},
+    {"label": "Engine Type Piston", "value": "engine_type_Piston"},
+    {"label": "Engine Type Turboprop", "value": "engine_type_Turboprop"},
+    {"label": "Wing Config Biplane", "value": "wing_config_Biplane"},
+    {"label": "Wing Config High", "value": "wing_config_High"},
+    {"label": "Wing Config Low", "value": "wing_config_Low"},
+    {"label": "Wing Config Middle", "value": "wing_config_Middle"}
+]
 
 # Model:
 x = df[predictors].values.reshape(-1, len(predictors))
@@ -416,23 +439,41 @@ model = LogisticRegression(
 ### Evaluation
 
 # Plot the projection of the fitted curve over the predictors:
-b0 = model.intercept_[0]
-bs = [model.coef_[0][i] for i in range(len(predictors))]
-df_fit = pd.DataFrame()
-for i in range(len(predictors)):
-    df_fit[predictors[i]] = np.linspace(min(x_test[:, i]), max(x_test[:, i]), x_test.shape[0])
-df_fit["f"] = b0 + sum([bs[i]*df_fit[predictors[i]] for i in range(len(predictors))])
-df_fit["p"] = 1/(1 + np.exp(-(df_fit["f"])))
-p_i = 0
-plot_logit_fit_proj = px.line(
-    x = df_fit[predictors[p_i]],
-    y = df_fit["p"],
-    template = "plotly_dark"
-).add_scatter(
-    x = df[predictors[p_i]],
-    y = df["is_military"],
-    mode = "markers"
+@app.callback(
+    Output(component_id = "plot_logit_fit_proj", component_property = "figure"),
+    [Input(component_id = "predictor_proj_logit", component_property = "value")]
 )
+def update_plot_logit_fit_proj(predictor_proj_logit):
+    b0 = model.intercept_[0]
+    bs = [model.coef_[0][i] for i in range(len(predictors))]
+    df_fit = pd.DataFrame()
+    for i in range(len(predictors)):
+        df_fit[predictors[i]] = np.linspace(min(x_test[:, i]), max(x_test[:, i]), x_test.shape[0])
+    df_fit["f"] = b0 + sum([bs[i]*df_fit[predictors[i]] for i in range(len(predictors))])
+    df_fit["p"] = 1/(1 + np.exp(-(df_fit["f"])))
+    
+    plot_logit_fit_proj = px.scatter(
+        x = df[predictor_proj_logit],
+        y = df["is_military"],
+        color = df["main_operator"],
+        labels = {"x": predictor_proj_logit,
+                  "y": "Is Military?"},
+        template = "plotly_dark"
+    ).add_scatter(
+        x = df_fit[predictor_proj_logit],
+        y = df_fit["p"],
+        mode = "lines",
+        name = "Fit"
+    ).update_layout(
+        legend = {"orientation": "h",
+                  "yanchor": "bottom",
+                  "y": 1.02,
+                  "xanchor": "right",
+                  "x": 1},
+        legend_title_text = "",
+        height = 460
+    )
+    return(plot_logit_fit_proj)
 
 # Plot of probability distributions of the populations:
 threshold = 0.5
@@ -457,12 +498,19 @@ group_labels = [hist_labels[i] for i in range(len(hist_labels)) if len(hist_vars
 plot_logit_pdf_pop = ff.create_distplot(
     hist_data = hist_data, 
     group_labels = group_labels, 
-    bin_size = 0.0005,
+    bin_size = 0.0025,
     curve_type = "normal",
     histnorm = "probability",
     colors = ["#c70039", "#2a7b9b", "#ff8d1a", "#57c785"]
 ).update_layout(
-    template = "plotly_dark"
+    template = "plotly_dark",
+    legend = {"orientation": "h",
+              "yanchor": "bottom",
+              "y": 1.02,
+              "xanchor": "right",
+              "x": 1},
+    legend_title_text = "",
+    height = 500
 )
 
 # Confusion matrix:
@@ -480,6 +528,8 @@ plot_logit_confusion = px.imshow(
         "color": "Frequency"
     },
     template = "plotly_dark"
+).update_layout(
+    height = 500
 )
 
 # ROC curve:
@@ -496,7 +546,7 @@ plot_logit_roc = px.area(
     x = "fpr", 
     y = "tpr",
     hover_data = ["thresholds"],
-    title = f"ROC Curve (AUC={auc:.3f})",
+    title = f"AUC = {auc:.3f}",
     labels = {
         "fpr": "False Positive Rate",
         "tpr": "True Positive Rate",
@@ -510,23 +560,25 @@ plot_logit_roc = px.area(
     x1 = 1,
     y0 = 0,
     y1 = 1
+).update_layout(
+    height = 500
 )
 
 # Report:
-print("Accuracy: " + str(model.score(x_test, y_test).round(2)))
-print(classification_report(y_true = y_test,
-                            y_pred = model.predict(x_test),
-                            output_dict = False))
-
-
-
-
-
-
-
-
-
-
+report_logit = classification_report(y_true = y_test,
+                                     y_pred = model.predict(x_test),
+                                     labels = [0, 1],
+                                     target_names = ["Civil", "Military"],
+                                     output_dict = True)
+df_rep = pd.DataFrame(report_logit).round(3)
+plot_logit_report = ff.create_annotated_heatmap(
+    z = df_rep.values,
+    x = list(df_rep.columns),
+    y = list(df_rep.index)
+).update_layout(
+    height = 500,
+    template = "plotly_dark"
+)
 
 
 ###### k-Means Clustering
@@ -572,10 +624,11 @@ app.layout = html.Div(
                 ),
                 dbc.Tab(
                     label = "Machine Learning Models",
-                    children = tab_ml_models(plot_logit_fit_proj = plot_logit_fit_proj,
-                                             plot_logit_pdf_pop = plot_logit_pdf_pop,
+                    children = tab_ml_models(plot_logit_pdf_pop = plot_logit_pdf_pop,
                                              plot_logit_confusion = plot_logit_confusion,
-                                             plot_logit_roc = plot_logit_roc)
+                                             plot_logit_roc = plot_logit_roc,
+                                             logit_predictors_poss = logit_predictors_poss,
+                                             plot_logit_report = plot_logit_report)
                 )
             ]
         )
