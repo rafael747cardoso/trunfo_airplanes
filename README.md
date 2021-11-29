@@ -2,7 +2,8 @@
 # Trunfo Airplanes Dashboard
 
 ### Dashboard url:
-https://trunfo_airplanes_dash.herokuapp.com
+
+https://trunfo-airplanes.herokuapp.com/
 
 A Dashboard to explore the data contained in Trunfo Airplanes cards. 
 An interactive Logistic Regression is also implemented.

@@ -16,7 +16,6 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import classification_report, confusion_matrix, roc_curve, roc_auc_score
 from sklearn.model_selection import train_test_split
 
-
 from Funcs.ui_explo_data_analysis import tab_explo_data_analysis
 from Funcs.ui_table import tab_table
 from Funcs.ui_ml_models import tab_ml_models
